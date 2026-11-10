@@ -166,7 +166,7 @@
     <button class="link" id="redo">← Refazer as perguntas</button>
   </div>
 
-  <footer>Estimativa simples, sem valor oficial. Nada do que você digita sai do seu aparelho. <span id="visits"></span></footer>
+  <footer>Estimativa simples, sem valor oficial. Nada do que você digita sai do seu aparelho: contamos só as visitas, sem cookies. <span id="visits"></span></footer>
 </main>
 
 <script>
@@ -391,6 +391,7 @@ function finish() {
   setBar(1);
   calc();
   window.scrollTo(0, 0);
+  countEvent('resultado');
 }
 
 /* ---------- a conta ---------- */
@@ -452,7 +453,7 @@ const CONFIG = {
   pixName: '',          // nome do recebedor (até 25 letras)
   pixCity: '',          // cidade do recebedor (até 15 letras)
   pixAmounts: [5, 10, 20],
-  goatcounter: '',      // código da conta no GoatCounter (contador sem cookies)
+  goatcounter: 'suspoupa',   // código da conta no GoatCounter (contador sem cookies)
 };
 if (new URLSearchParams(location.search).has('preview')) {   // ?preview mostra os blocos com dados de exemplo
   Object.assign(CONFIG, {
@@ -481,10 +482,19 @@ function pixCode(amount) {   // monta o "Pix copia e cola" (BR Code estático) c
   return payload + crc16(payload);
 }
 
+// Conta que algo aconteceu (uma vez por visita), sem enviar nenhuma resposta.
+const counted = new Set();
+function countEvent(name) {
+  if (counted.has(name) || !window.goatcounter || !window.goatcounter.count) return;
+  counted.add(name);
+  window.goatcounter.count({ path: name, title: name, event: true });
+}
+
 function setupExtras() {
   const s = $('sponsor');
   if (CONFIG.sponsor) {
     const a = el('a', { href: CONFIG.sponsor.url, textContent: CONFIG.sponsor.name, target: '_blank', rel: 'noopener sponsored' });
+    a.dataset.goatcounterClick = 'patrocinador: ' + CONFIG.sponsor.name;   // conta os cliques no link
     s.append('Patrocinado por ', a);
     s.hidden = false;
   } else if (CONFIG.sponsorContact) {
