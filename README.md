@@ -2,6 +2,8 @@
 
 Uma calculadora que estima quanto a sua casa gastaria com saúde em um ano se o SUS não existisse.
 
+**Use agora:** https://rannyeribatista.github.io/sus-poupa/
+
 Você responde umas doze perguntas simples, e ela mostra a conta: o que você usa de saúde, quanto isso custaria no particular e quanto custaria com um plano.
 
 É uma página só, sem servidor e sem cadastro. Nada do que você digita sai do seu aparelho.

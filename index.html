@@ -83,6 +83,17 @@
   details summary { cursor: pointer; font-weight: 600; }
   details .grid { margin-top: 14px; }
   footer { color: var(--muted); font-size: 0.82rem; margin-top: 20px; }
+  #sponsor {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px;
+    font-size: 0.85rem; color: var(--muted);
+    border: 1px dashed var(--line); border-radius: 10px; padding: 10px 14px;
+  }
+  #sponsor a { color: var(--ink); font-weight: 600; }
+  .amounts { display: flex; flex-wrap: wrap; gap: 10px; }
+  .amounts button { min-width: 84px; }
+  #pix_done { margin-top: 14px; }
+  #pix_done p { margin: 0 0 6px; font-size: 0.9rem; color: var(--accent); font-weight: 600; }
+  #pix_code { font-size: 0.8rem; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -90,6 +101,8 @@
 <main>
   <h1>Quanto o SUS te poupa?</h1>
   <p class="lead">Uma estimativa de quanto a sua casa gastaria em um ano se o SUS não existisse.</p>
+
+  <div id="sponsor" hidden></div>
 
   <section id="quiz">
     <div class="count" id="count"></div>
@@ -140,10 +153,20 @@
       </details>
     </section>
 
+    <section id="pix" hidden>
+      <h2>Isso te ajudou?</h2>
+      <p class="hint">Esta calculadora é gratuita e de código aberto. Um Pix de qualquer valor ajuda a mantê-la no ar. Escolha um valor para copiar o código.</p>
+      <div class="amounts" id="pix_amounts"></div>
+      <div id="pix_done" hidden>
+        <p id="pix_msg"></p>
+        <input type="text" id="pix_code" readonly aria-label="Código Pix copia e cola">
+      </div>
+    </section>
+
     <button class="link" id="redo">← Refazer as perguntas</button>
   </div>
 
-  <footer>Estimativa simples, sem valor oficial. Nada do que você digita sai do seu aparelho.</footer>
+  <footer>Estimativa simples, sem valor oficial. Nada do que você digita sai do seu aparelho. <span id="visits"></span></footer>
 </main>
 
 <script>
@@ -419,7 +442,92 @@ function calc() {
     : 'é quanto o SUS poupou à sua casa em um ano, dependendo de como você pagaria sem ele.';
 }
 
+/* ---------- patrocínio, Pix e contador de visitas ---------- */
+
+// Cada bloco só aparece quando o seu valor está preenchido aqui.
+const CONFIG = {
+  sponsor: null,        // quando vendido: { name: 'Nome', url: 'https://…' }
+  sponsorContact: '',   // link para quem quer patrocinar (aparece enquanto o espaço está vago)
+  pixKey: '',           // chave Pix que recebe as doações
+  pixName: '',          // nome do recebedor (até 25 letras)
+  pixCity: '',          // cidade do recebedor (até 15 letras)
+  pixAmounts: [5, 10, 20],
+  goatcounter: '',      // código da conta no GoatCounter (contador sem cookies)
+};
+if (new URLSearchParams(location.search).has('preview')) {   // ?preview mostra os blocos com dados de exemplo
+  Object.assign(CONFIG, {
+    sponsorContact: '#', pixKey: '00000000-0000-0000-0000-000000000000', pixName: 'Nome de Exemplo', pixCity: 'Cidade',
+  });
+}
+
+function crc16(text) {   // CRC16-CCITT (0xFFFF), exigido pelo padrão do Pix
+  let crc = 0xFFFF;
+  for (let n = 0; n < text.length; n++) {
+    crc ^= text.charCodeAt(n) << 8;
+    for (let b = 0; b < 8; b++) crc = (crc & 0x8000 ? (crc << 1) ^ 0x1021 : crc << 1) & 0xFFFF;
+  }
+  return crc.toString(16).toUpperCase().padStart(4, '0');
+}
+
+function pixCode(amount) {   // monta o "Pix copia e cola" (BR Code estático) com o valor escolhido
+  const tlv = (id, value) => id + String(value.length).padStart(2, '0') + value;
+  const ascii = (text, max) => text.normalize('NFD').replace(/[^\x20-\x7E]/g, '').slice(0, max);
+  const payload =
+    tlv('00', '01') +
+    tlv('26', tlv('00', 'br.gov.bcb.pix') + tlv('01', CONFIG.pixKey)) +
+    tlv('52', '0000') + tlv('53', '986') + tlv('54', amount.toFixed(2)) + tlv('58', 'BR') +
+    tlv('59', ascii(CONFIG.pixName, 25)) + tlv('60', ascii(CONFIG.pixCity, 15)) +
+    tlv('62', tlv('05', '***')) + '6304';
+  return payload + crc16(payload);
+}
+
+function setupExtras() {
+  const s = $('sponsor');
+  if (CONFIG.sponsor) {
+    const a = el('a', { href: CONFIG.sponsor.url, textContent: CONFIG.sponsor.name, target: '_blank', rel: 'noopener sponsored' });
+    s.append('Patrocinado por ', a);
+    s.hidden = false;
+  } else if (CONFIG.sponsorContact) {
+    const a = el('a', { href: CONFIG.sponsorContact, textContent: 'Este espaço está à venda →', target: '_blank', rel: 'noopener' });
+    s.append('Patrocinado por: ', a);
+    s.hidden = false;
+  }
+
+  if (CONFIG.pixKey && CONFIG.pixName && CONFIG.pixCity) {
+    CONFIG.pixAmounts.forEach(amount => {
+      const b = el('button', { type: 'button', textContent: brl.format(amount) });
+      b.onclick = async () => {
+        const code = pixCode(amount);
+        $('pix_code').value = code;
+        $('pix_done').hidden = false;
+        try {
+          await navigator.clipboard.writeText(code);
+          $('pix_msg').textContent = 'Código de ' + brl.format(amount) + ' copiado. Cole no Pix do seu banco.';
+        } catch (e) {
+          $('pix_msg').textContent = 'Copie o código abaixo e cole no Pix do seu banco.';
+          $('pix_code').select();
+        }
+      };
+      $('pix_amounts').appendChild(b);
+    });
+    $('pix_code').onfocus = () => $('pix_code').select();
+    $('pix').hidden = false;
+  }
+
+  if (CONFIG.goatcounter) {
+    const base = 'https://' + CONFIG.goatcounter + '.goatcounter.com';
+    const tag = el('script', { async: true, src: 'https://gc.zgo.at/count.js' });
+    tag.dataset.goatcounter = base + '/count';
+    document.head.appendChild(tag);
+    fetch(base + '/counter/TOTAL.json')
+      .then(r => r.json())
+      .then(d => { $('visits').textContent = d.count + ' visitas até agora.'; })
+      .catch(() => {});
+  }
+}
+
 $('results').addEventListener('input', calc);
+setupExtras();
 render();
 </script>
 </body>
