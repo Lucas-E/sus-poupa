@@ -442,18 +442,19 @@ function calc() {
   body.appendChild(row('', 'Mensalidades do plano (12 meses)', '—', brl.format(premiums)));
 
   const paid = num('paid');
-  const savedPrivate = totalPrivate - paid;
-  const savedPlan = totalPlan - paid;
+  // Nunca negativo: pagar mais do que a estimativa quer dizer que o SUS poupou zero, não que ele custou algo.
+  const savedPrivate = Math.max(0, totalPrivate - paid);
+  const savedPlan = Math.max(0, totalPlan - paid);
 
   body.appendChild(row('total', 'Custo sem o SUS', brl.format(totalPrivate), brl.format(totalPlan)));
   body.appendChild(row('', 'Você já pagou do bolso', '− ' + brl.format(paid), '− ' + brl.format(paid)));
   body.appendChild(row('saved', 'O SUS te poupou', brl.format(savedPrivate), brl.format(savedPlan)));
 
-  const lo = Math.max(0, Math.min(savedPrivate, savedPlan));
-  const hi = Math.max(0, Math.max(savedPrivate, savedPlan));
+  const lo = Math.min(savedPrivate, savedPlan);
+  const hi = Math.max(savedPrivate, savedPlan);
   $('headline').textContent = lo === hi ? brl.format(lo) : brl.format(lo) + ' a ' + brl.format(hi);
   $('headline_sub').textContent = hi === 0
-    ? 'Pelo que você informou, você já pagou do bolso tudo o que usou.'
+    ? 'Pelo que você informou, você já pagou do bolso tudo o que usou. Se a sua casa usou mais do que estimamos, ajuste o uso logo abaixo.'
     : 'é quanto o SUS poupou à sua casa em um ano, dependendo de como você pagaria sem ele.';
 }
 

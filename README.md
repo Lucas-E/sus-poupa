@@ -113,6 +113,8 @@ poupado (particular) = custo particular − o que você já pagou
 poupado (plano)      = custo com plano  − o que você já pagou
 ```
 
+Nenhum dos dois resultados fica negativo. Se você pagou mais do que o custo estimado, o resultado é zero: quer dizer que a estimativa de uso ficou baixa para a sua casa, não que o SUS te custou alguma coisa.
+
 O número grande no topo é a faixa entre esses dois resultados.
 
 ## O que a conta não considera
