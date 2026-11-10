@@ -8,11 +8,13 @@
   :root {
     --bg: #f6f7f5; --card: #ffffff; --ink: #16201a; --muted: #5d6b62;
     --line: #dfe4df; --accent: #0a7d48; --accent-ink: #ffffff; --accent-soft: #e3f3ea;
+    --sus: var(--accent); --plano: #5f6f8a; --bolso: #b8731f;
   }
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #111613; --card: #1a211c; --ink: #e9efea; --muted: #98a69c;
       --line: #2b352e; --accent: #4fd08e; --accent-ink: #0c1a12; --accent-soft: #17301f;
+      --plano: #8a9bb8; --bolso: #e0a04f;
     }
   }
   * { box-sizing: border-box; }
@@ -42,7 +44,7 @@
   }
   .numwrap { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
   .numwrap input { margin-top: 0; flex: 1; min-width: 0; }
-  .numwrap.count input { text-align: center; }
+  .numwrap.count input, .numwrap.qty input { text-align: center; }
   .numwrap .affix { color: var(--muted); font-size: 0.95rem; }
   button.step { flex: none; width: 42px; height: 42px; padding: 0; font-size: 1.25rem; line-height: 1; }
   input:focus, select:focus, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
@@ -79,7 +81,41 @@
   td small { display: block; color: var(--muted); font-size: 0.75rem; }
   tr.total td { font-weight: 700; border-top: 2px solid var(--line); }
   tr.saved td { font-weight: 700; color: var(--accent); border-bottom: 0; font-size: 1.05rem; }
-  .paid { max-width: 320px; }
+  .paid { max-width: 320px; margin-top: 16px; }
+  #plan_line, #pocket_line { margin: 14px 0 0; }
+
+  /* extrato: uma linha por tipo de cuidado, com quem pagou */
+  .lrow { padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .lrow:last-child { border-bottom: 0; }
+  .lhead { display: flex; justify-content: space-between; gap: 12px; font-weight: 600; }
+  .lval { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .lprice { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 0.82rem; color: var(--muted); }
+  .lprice input { width: 5.5em; margin: 0; padding: 4px 6px; font-size: 0.82rem; }
+  .lprice input.ltotal { width: 3.6em; text-align: center; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .chip { display: flex; align-items: stretch; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .chip button { border: 0; border-radius: 0; padding: 8px 10px; font-size: 0.85rem; background: var(--bg); color: var(--muted); }
+  .chip input { width: 3.4em; margin: 0; border: 0; border-left: 1px solid var(--line); border-radius: 0; padding: 8px 4px; text-align: center; }
+  .chip.on.sus   { border-color: var(--sus); }
+  .chip.on.sus button   { background: var(--sus); color: var(--accent-ink); }
+  .chip.on.plano { border-color: var(--plano); }
+  .chip.on.plano button { background: var(--plano); color: #fff; }
+  .chip.on.bolso { border-color: var(--bolso); }
+  .chip.on.bolso button { background: var(--bolso); color: #fff; }
+  .noplan .chip.plano, .noplan .pile.plano { display: none; }
+  .lsplit { margin-top: 8px; font-size: 0.82rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  #more { margin-top: 14px; }
+  .bar3 { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--line); margin: 10px 0 14px; }
+  .bar3 i { display: block; height: 100%; }
+  .bar3 .sus { background: var(--sus); } .bar3 .plano { background: var(--plano); } .bar3 .bolso { background: var(--bolso); }
+  .piles { display: grid; gap: 8px; }
+  .pile { display: flex; align-items: baseline; gap: 8px; font-variant-numeric: tabular-nums; }
+  .pile::before { content: ''; flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--dot); }
+  .pile.sus { --dot: var(--sus); } .pile.plano { --dot: var(--plano); } .pile.bolso { --dot: var(--bolso); }
+  .pile b { margin-left: auto; }
+  .pile small { color: var(--muted); min-width: 3em; text-align: right; }
+  ul.unseen { margin: 8px 0 0; padding-left: 20px; }
+  ul.unseen li { margin: 6px 0; }
   details summary { cursor: pointer; font-weight: 600; }
   details .grid { margin-top: 14px; }
   footer { color: var(--muted); font-size: 0.82rem; margin-top: 20px; }
@@ -130,34 +166,45 @@
     </section>
 
     <section>
-      <h2>Quanto você pagou do próprio bolso?</h2>
-      <p class="hint">Consultas, exames, remédios ou qualquer outra coisa de saúde que você pagou no particular em 12 meses.</p>
-      <div class="paid" id="paid_box"></div>
-    </section>
-
-    <section>
-      <h2>A conta</h2>
-      <p class="hint" id="table_hint"></p>
-      <div class="tablewrap">
-        <table>
-          <thead><tr><th></th><th>Pagando particular</th><th>Com plano de saúde</th></tr></thead>
-          <tbody id="rows"></tbody>
-        </table>
+      <h2>O ano da sua casa</h2>
+      <p class="hint">O valor de todo o cuidado com a saúde que a casa teve, dividido por quem pagou.</p>
+      <div class="bar3" id="bar3"><i class="sus"></i><i class="plano"></i><i class="bolso"></i></div>
+      <div class="piles">
+        <div class="pile sus">O SUS pagou <b id="pile_sus"></b><small id="pct_sus"></small></div>
+        <div class="pile plano">O plano pagou <b id="pile_plano"></b><small id="pct_plano"></small></div>
+        <div class="pile bolso">A casa pagou no particular <b id="pile_bolso"></b><small id="pct_bolso"></small></div>
       </div>
+      <p class="hint" id="pocket_line"></p>
+      <p class="hint" id="plan_line" hidden></p>
     </section>
 
     <section>
-      <details>
-        <summary>Ajustar o uso estimado</summary>
-        <p class="hint" style="margin-top:10px">Quantidades por ano para a casa toda, estimadas pelas suas respostas.</p>
-        <div class="grid" id="usage"></div>
+      <h2>Quem pagou o quê</h2>
+      <p class="hint" id="table_hint"></p>
+      <div id="ledger"></div>
+      <details id="more">
+        <summary>Adicionar o que faltou</summary>
+        <div id="ledger_more"></div>
       </details>
+      <div class="paid" id="premium_box"></div>
+    </section>
+
+    <section>
+      <h2>O que não aparece na conta</h2>
+      <p class="hint">O SUS também trabalha para a sua casa de jeitos que não viram consulta nem exame. Nada disto está nos números acima.</p>
+      <ul class="unseen">
+        <li>O SAMU 192 de prontidão, que cobre 88% da população.</li>
+        <li>A vigilância sanitária, que fiscaliza comida, água, remédios e restaurantes.</li>
+        <li>O controle de epidemias e as campanhas de vacinação.</li>
+        <li>A grande maioria dos transplantes feitos no país.</li>
+        <li>Tratamentos de alto custo, como câncer e hemodiálise, se um dia a casa precisar.</li>
+      </ul>
     </section>
 
     <section>
       <details>
-        <summary>Ajustar preços</summary>
-        <p class="hint" style="margin-top:10px">Valores médios aproximados para a sua região. Troque pelos preços da sua cidade se souber.</p>
+        <summary>Ajustar os preços do plano de saúde</summary>
+        <p class="hint" style="margin-top:10px">Usados na comparação com um plano e na mensalidade estimada. Os preços de cada cuidado são ajustados na própria linha.</p>
         <div class="grid" id="prices"></div>
       </details>
     </section>
@@ -223,18 +270,31 @@ const STEPS = [
   { id: 'capital',  type: 'choice', q: 'Em que parte do estado você mora?',
     options: [['Capital ou região metropolitana', 'capital'], ['Interior', 'interior']] },
   { id: 'casa',     type: 'casa', q: 'Quem mora na sua casa?' },
+  { id: 'plano',    type: 'choice', q: 'Alguém da casa tem plano de saúde?',
+    options: [['Ninguém', 'ninguem'], ['Parte da casa', 'parte'], ['Todos', 'todos']] },
+  { id: 'origem',   type: 'choice', q: 'No último ano, onde a casa cuidou da saúde?',
+    options: [['Só no SUS', 'so_sus'], ['Mais no SUS', 'mais_sus'], ['Meio a meio', 'meio'],
+              ['Mais no plano ou no particular', 'mais_fora'], ['Não usamos o SUS', 'nada']] },
   { id: 'bebe',     type: 'yn',   q: 'Tem bebê de até 2 anos em casa?', show: s => s.c > 0 },
   { id: 'checkup',  type: 'yn',   q: 'Alguém da casa costuma ir ao médico mesmo sem estar doente?' },
   { id: 'cronico',  type: 'yn',   q: 'Alguém da casa tem uma condição que pede acompanhamento, como diabetes, pressão alta ou asma?' },
   { id: 'ps',       type: 'yn',   q: 'No último ano, alguém da casa precisou de atendimento de urgência mais de duas vezes?' },
   { id: 'gravidez', type: 'choice', q: 'No último ano, alguém da casa esteve grávida?',
     options: [['Não', 'nao'], ['Sim, o bebê ainda não nasceu', 'gravida'], ['Sim, o bebê já nasceu', 'nasceu']] },
+  { id: 'parto_sus', type: 'yn',  q: 'O parto foi pelo SUS?', show: s => mixed(s) && s.gravidez === 'nasceu' },
   { id: 'hospital', type: 'choice', q: 'No último ano, alguém da casa ficou internado?',
     options: [['Não', 'nao'], ['Sim, sem cirurgia', 'internacao'], ['Sim, com cirurgia', 'cirurgia']] },
+  { id: 'hospital_sus', type: 'yn', q: 'Essa internação foi pelo SUS?', show: s => mixed(s) && (s.hospital === 'internacao' || s.hospital === 'cirurgia') },
   { id: 'tomo',     type: 'yn',   q: 'No último ano, alguém da casa fez um exame de imagem caro, como tomografia ou ressonância?' },
+  { id: 'tomo_sus', type: 'yn',   q: 'Esse exame foi pelo SUS?', show: s => mixed(s) && s.tomo === true },
   { id: 'vacinas',  type: 'yn',   q: 'As vacinas da casa estão em dia?' },
   { id: 'dentista', type: 'yn',   q: 'A casa costuma ir ao dentista pelo menos uma vez por ano?' },
 ];
+
+// Que parte do uso do dia a dia veio do SUS, pela resposta de "onde a casa cuidou da saúde".
+const SHARE = { so_sus: 1, mais_sus: 0.75, meio: 0.5, mais_fora: 0.25, nada: 0 };
+// Só pergunta "foi pelo SUS?" de cada evento caro quando a casa misturou SUS com plano ou particular.
+const mixed = s => s.origem !== 'so_sus' && s.origem !== 'nada';
 
 const state = { uf: '', c: 0, a: 1, i: 0 };
 let idx = 0;
@@ -243,6 +303,10 @@ const $ = id => document.getElementById(id);
 const parse = v => parseInt(String(v).replace(/\D/g, ''), 10) || 0;
 const fmt = n => Math.max(0, Math.round(n)).toLocaleString('pt-BR');
 const num = id => parse($(id).value);
+// quantidades aceitam uma casa decimal (0,5 = uma vez a cada dois anos)
+const parseQty = v => { const n = parseFloat(String(v).replace(/[^\d,]/g, '').replace(',', '.')); return isFinite(n) ? Math.round(n * 10) / 10 : 0; };
+const fmtQty = n => (Math.max(0, Math.round(n * 10)) / 10).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+const numQty = id => parseQty($(id).value);
 const setVal = (id, n) => { $(id).value = fmt(n); };
 const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
 const el = (tag, props, kids) => {
@@ -254,17 +318,27 @@ const visible = () => STEPS.filter(s => !s.show || s.show(state));
 
 // Todo campo numérico se comporta igual: só aceita dígitos, mostra separador de milhar,
 // seleciona tudo ao receber foco e volta para 0 se ficar vazio.
-// kind: 'count' (com botões − e +) · 'money' (prefixo R$) · 'percent' (sufixo %)
-function field(id, label, value, kind) {
-  kind = kind || 'count';
-  const input = el('input', { type: 'text', id, inputMode: 'numeric', autocomplete: 'off', maxLength: 9, value: fmt(value) });
+// kind: 'count' (inteiro, com botões − e +) · 'qty' (uma casa decimal) · 'money' (prefixo R$) · 'percent' (sufixo %)
+function numInput(id, value, kind) {
+  const qty = kind === 'qty';
+  const input = el('input', { type: 'text', id, inputMode: qty ? 'decimal' : 'numeric', autocomplete: 'off', maxLength: 9, value: qty ? fmtQty(value) : fmt(value) });
   input.addEventListener('input', () => {
+    if (qty) {   // dígitos e uma vírgula, com uma casa depois dela
+      const [whole, ...rest] = input.value.replace(/[^\d,]/g, '').split(',');
+      input.value = rest.length ? whole + ',' + rest.join('').slice(0, 1) : whole;
+      return;
+    }
     const digits = input.value.replace(/\D/g, '');
     input.value = digits === '' ? '' : fmt(parseInt(digits, 10));
   });
   input.addEventListener('focus', () => input.select());
   input.addEventListener('blur', () => { if (input.value === '') input.value = '0'; });
+  return input;
+}
 
+function field(id, label, value, kind) {
+  kind = kind || 'count';
+  const input = numInput(id, value, kind);
   const bump = delta => {
     input.value = fmt(parse(input.value) + delta);
     input.dispatchEvent(new Event('input', { bubbles: true }));
@@ -285,13 +359,74 @@ function field(id, label, value, kind) {
   return el('div', { className: 'field' }, [l, el('div', { className: 'numwrap ' + kind }, parts)]);
 }
 
-ITEMS.forEach(it => {
-  $('usage').appendChild(field('q_' + it.id, it.label, 0, 'count'));
-  $('prices').appendChild(field('p_' + it.id, it.label + ' (' + it.unit + ')', it.price, 'money'));
-});
+// O extrato: cada tipo de cuidado é uma linha, com o preço e a quantidade que cada um pagou.
+const PAYERS = [['sus', 'SUS'], ['plano', 'Plano'], ['bolso', 'Paguei']];
+const qid = (it, key) => 'q_' + it.id + '_' + key;
+const hasPlan = () => state.plano === 'parte' || state.plano === 'todos';
+// Para onde vai o que não é SUS: o plano, se a casa tem um e ele cobre aquilo; senão, o bolso.
+const otherPayer = it => hasPlan() && it.plan !== 'none' ? 'plano' : 'bolso';
+
+// A linha tem um total fixo. Mexer em um pagador tira ou devolve dos outros, para a soma continuar igual ao total.
+function rebalance(it, edited) {
+  const get = k => numQty(qid(it, k));
+  const set = (k, v) => { $(qid(it, k)).value = fmtQty(v); };
+  const total = numQty('t_' + it.id);
+  if (edited === 'total') {            // mudou o total: a diferença entra ou sai do SUS primeiro
+    let delta = Math.round((total - get('sus') - get('plano') - get('bolso')) * 10) / 10;
+    if (delta >= 0) set('sus', get('sus') + delta);
+    else ['sus', 'bolso', 'plano'].forEach(k => {
+      const take = Math.min(get(k), -delta);
+      set(k, get(k) - take);
+      delta = Math.round((delta + take) * 10) / 10;
+    });
+    return;
+  }
+  if (edited === 'sus') {              // mudou o SUS: o resto fica com plano e bolso, na proporção em que estavam
+    const others = get('plano') + get('bolso');
+    const rest = Math.round((total - get('sus')) * 10) / 10;
+    if (rest <= 0) { set('plano', 0); set('bolso', 0); }
+    else if (!others) set(otherPayer(it), rest);
+    else { const plano = Math.round(get('plano') * rest / others * 10) / 10; set('plano', plano); set('bolso', rest - plano); }
+  } else {                             // mudou plano ou bolso: sai do SUS
+    set('sus', total - get('plano') - get('bolso'));
+  }
+  // se os pagadores passaram do total, a casa usou mais do que o estimado: o total cresce
+  $('t_' + it.id).value = fmtQty(Math.max(total, get('sus') + get('plano') + get('bolso')));
+}
+
+function ledgerRow(it) {
+  const chips = PAYERS.map(([key, text]) => {
+    const input = numInput(qid(it, key), 0, 'qty');
+    input.setAttribute('aria-label', it.label + ': quantidade, ' + text);
+    input.addEventListener('input', () => rebalance(it, key));
+    const b = el('button', { type: 'button', textContent: text });
+    b.setAttribute('aria-label', it.label + ': marcar tudo como ' + text);
+    b.onclick = () => {   // um toque manda a linha inteira para este pagador
+      const total = numQty('t_' + it.id) || 1;
+      $('t_' + it.id).value = fmtQty(total);
+      PAYERS.forEach(([k]) => { $(qid(it, k)).value = fmtQty(k === key ? total : 0); });
+      calc();
+    };
+    return el('div', { className: 'chip ' + key }, [b, input]);
+  });
+  const price = numInput('p_' + it.id, it.price, 'money');
+  price.setAttribute('aria-label', 'Preço: ' + it.label + ', ' + it.unit);
+  const total = numInput('t_' + it.id, 0, 'qty');
+  total.className = 'ltotal';
+  total.setAttribute('aria-label', it.label + ': quantidade total no ano');
+  total.addEventListener('input', () => rebalance(it, 'total'));
+  return el('div', { className: 'lrow', id: 'r_' + it.id }, [
+    el('div', { className: 'lhead' }, [el('span', { textContent: it.label }), el('span', { className: 'lval', id: 'v_' + it.id })]),
+    el('div', { className: 'lprice' }, [total, el('span', { textContent: '× R$' }), price, el('span', { textContent: it.unit })]),
+    el('div', { className: 'chips' }, chips),
+    el('div', { className: 'lsplit', id: 's_' + it.id }),
+  ]);
+}
+
+ITEMS.forEach(it => $('ledger').appendChild(ledgerRow(it)));
+$('premium_box').appendChild(field('paid_plan', 'Mensalidade do plano, somando os 12 meses', 0, 'money'));
 PLAN.forEach(p => $('prices').appendChild(field('p_' + p.id, p.label, p.price, 'money')));
 $('prices').appendChild(field('p_copay', 'Coparticipação do plano', COPAY, 'percent'));
-$('paid_box').appendChild(field('paid', 'Valor pago em 12 meses', 0, 'money'));
 
 /* ---------- perguntas ---------- */
 
@@ -360,9 +495,10 @@ $('redo').onclick = () => {
   render();
 };
 
-/* ---------- das respostas para o uso estimado ---------- */
+/* ---------- das respostas para o extrato ---------- */
 
-function estimateUsage() {
+// Tudo o que a casa usou no ano, venha de onde vier.
+function estimateUse() {
   const s = state;
   const q = {};
   ITEMS.forEach(it => { q[it.id] = s.c * it.per.c + s.a * it.per.a + s.i * it.per.i; });
@@ -372,13 +508,43 @@ function estimateUsage() {
   if (s.c > 0 && s.bebe) { q.consulta += 6; q.vacina += 8; }
   if (s.ps)        { q.ps = Math.max(q.ps * 2.5, 3); }
   if (s.gravidez === 'gravida' || s.gravidez === 'nasceu') { q.consulta += 8; q.imagem += 4; q.lab += 3; }
-  if (s.gravidez === 'nasceu') { q.parto = 1; q.diaria += 2; }
-  if (s.hospital === 'internacao' || s.hospital === 'cirurgia') { q.diaria += 3; }
-  if (s.hospital === 'cirurgia') { q.cirurgia = 1; }
-  if (s.tomo)      { q.tomo = 1; }
   if (!s.vacinas)  { q.vacina *= 0.3; }
   if (!s.dentista) { q.dentista = 0; }
+
+  q.tomo = s.tomo ? 1 : 0;
+  q.parto = s.gravidez === 'nasceu' ? 1 : 0;
+  q.cirurgia = s.hospital === 'cirurgia' ? 1 : 0;
+  q.diaria = (q.parto ? 2 : 0) + (s.hospital === 'internacao' || s.hospital === 'cirurgia' ? 3 : 0);
   return q;
+}
+
+// Primeiro palpite de quem pagou cada coisa. A pessoa corrige linha por linha no extrato.
+function splitUse(q) {
+  const s = state;
+  const r1 = n => Math.round(n * 10) / 10;
+  const share = SHARE[s.origem] ?? 1;
+  const viaSus = answer => s.origem === 'so_sus' || (mixed(s) && answer === true);
+  const partoSus = viaSus(s.parto_sus), hospitalSus = viaSus(s.hospital_sus);
+
+  // a parte de cada item que veio do SUS
+  const sus = {};
+  ITEMS.forEach(it => { sus[it.id] = q[it.id] * share; });            // uso do dia a dia
+  sus.vacina = s.origem === 'nada' ? 0 : q.vacina;                     // vacina vem do SUS mesmo para quem tem plano
+  sus.tomo = viaSus(s.tomo_sus) ? q.tomo : 0;                          // eventos caros nunca são divididos
+  sus.parto = partoSus ? q.parto : 0;
+  sus.cirurgia = hospitalSus ? q.cirurgia : 0;
+  sus.diaria = (q.parto && partoSus ? 2 : 0) + (q.diaria - (q.parto ? 2 : 0)) * (hospitalSus ? 1 : 0);
+
+  // o resto vai para o plano, se a casa tem um e ele cobre aquilo; senão, para o bolso
+  const out = {};
+  ITEMS.forEach(it => {
+    const total = r1(q[it.id]);
+    const a = Math.min(total, r1(sus[it.id]));
+    const rest = r1(total - a);
+    const toPlan = otherPayer(it) === 'plano';
+    out[it.id] = { sus: a, plano: toPlan ? rest : 0, bolso: toPlan ? 0 : rest };
+  });
+  return out;
 }
 
 function priceFactor() {
@@ -387,18 +553,28 @@ function priceFactor() {
 }
 
 function finish() {
-  const q = estimateUsage();
+  const split = splitUse(estimateUse());
   const f = priceFactor();
   const round5 = v => Math.max(5, Math.round(v * f / 5) * 5);
   ITEMS.forEach(it => {
-    setVal('q_' + it.id, q[it.id]);
+    PAYERS.forEach(([k]) => { $(qid(it, k)).value = fmtQty(split[it.id][k]); });
     setVal('p_' + it.id, round5(it.price));
+    const used = split[it.id].sus + split[it.id].plano + split[it.id].bolso > 0;
+    $('t_' + it.id).value = fmtQty(split[it.id].sus + split[it.id].plano + split[it.id].bolso);
+    (used ? $('ledger') : $('ledger_more')).appendChild($('r_' + it.id));   // o que a casa não usou fica guardado em "o que faltou"
   });
   PLAN.forEach(p => setVal('p_' + p.id, round5(p.price)));
+  $('more').hidden = !$('ledger_more').children.length;
+  $('more').open = !$('ledger').children.length;
+
+  $('results').classList.toggle('noplan', !hasPlan());
+  $('premium_box').hidden = !hasPlan();
+  setVal('paid_plan', state.plano === 'todos' ? premiums() : 0);
 
   const uf = UFS.find(u => u[0] === state.uf);
-  $('table_hint').textContent = 'O mesmo uso, pago de duas formas diferentes, com preços médios de ' +
-    (uf ? uf[1] : 'sua região') + (state.capital === 'capital' ? ' (capital ou região metropolitana).' : ' (interior).');
+  $('table_hint').textContent = 'Cada linha é um tipo de cuidado que a casa teve no ano, a preços médios do particular em ' +
+    (uf ? uf[1] : 'sua região') + (state.capital === 'capital' ? ' (capital ou região metropolitana)' : ' (interior)') +
+    '. Toque em ' + (hasPlan() ? 'SUS, Plano ou Paguei' : 'SUS ou Paguei') + ' para dizer quem pagou a linha inteira, ou digite quantas você pagou e o resto se ajusta sozinho. Meio (0,5) quer dizer uma vez a cada dois anos.';
 
   $('quiz').hidden = true;
   $('results').hidden = false;
@@ -410,52 +586,56 @@ function finish() {
 
 /* ---------- a conta ---------- */
 
-function row(cls, label, a, b, noteB) {
-  const tr = el('tr', { className: cls || '' });
-  [label, a, b].forEach((text, n) => {
-    const td = el('td', { textContent: text });
-    if (n === 2 && noteB) td.appendChild(el('small', { textContent: noteB }));
-    tr.appendChild(td);
-  });
-  return tr;
-}
+const premiums = () => 12 * (state.c * num('p_plan_c') + state.a * num('p_plan_a') + state.i * num('p_plan_i'));
 
+// Três montes que nunca se subtraem: o que o SUS pagou, o que o plano pagou e o que a casa pagou.
+// Tudo a preço de particular, para os três falarem a mesma língua.
 function calc() {
   const copay = Math.min(100, num('p_copay')) / 100;
-  const body = $('rows');
-  body.textContent = '';
-  let totalPrivate = 0, totalPlan = 0;
+  const sum = { sus: 0, plano: 0, bolso: 0 };
+  let withPlan = 0;
 
   ITEMS.forEach(it => {
-    const qty = num('q_' + it.id);
-    if (!qty) return;
-    const value = qty * num('p_' + it.id) * (it.times || 1);
-    const planValue = it.plan === 'copay' ? value * copay : it.plan === 'none' ? value : 0;
-    const note = it.plan === 'copay' ? 'coparticipação' : it.plan === 'none' ? 'plano não cobre' : 'coberto pelo plano';
-    totalPrivate += value;
-    totalPlan += planValue;
-    body.appendChild(row('', it.label + ' (' + qty + ')', brl.format(value), brl.format(planValue), note));
+    const price = num('p_' + it.id) * (it.times || 1);
+    const parts = [];
+    let rowTotal = 0;
+    PAYERS.forEach(([key, text]) => {
+      const value = numQty(qid(it, key)) * price;
+      $(qid(it, key)).parentNode.classList.toggle('on', value > 0);
+      sum[key] += value;
+      rowTotal += value;
+      if (value > 0) parts.push((key === 'bolso' ? 'você' : text) + ' ' + brl.format(value));
+      if (key === 'sus') withPlan += it.plan === 'copay' ? value * copay : it.plan === 'none' ? value : 0;
+    });
+    $('v_' + it.id).textContent = brl.format(rowTotal);
+    $('s_' + it.id).textContent = parts.length > 1 ? parts.join(' · ') : '';
   });
 
-  const premiums = 12 * (state.c * num('p_plan_c') + state.a * num('p_plan_a') + state.i * num('p_plan_i'));
-  totalPlan += premiums;
-  body.appendChild(row('', 'Mensalidades do plano (12 meses)', '—', brl.format(premiums)));
+  $('headline').textContent = brl.format(sum.sus);
+  $('headline_sub').textContent = sum.sus === 0
+    ? 'Pelo que você informou, a sua casa não usou o SUS neste ano. Se usou, marque no extrato logo abaixo.'
+    : 'é quanto custaria, no particular, o que a sua casa recebeu do SUS em um ano.';
 
-  const paid = num('paid');
-  // Nunca negativo: pagar mais do que a estimativa quer dizer que o SUS poupou zero, não que ele custou algo.
-  const savedPrivate = Math.max(0, totalPrivate - paid);
-  const savedPlan = Math.max(0, totalPlan - paid);
+  const total = sum.sus + sum.plano + sum.bolso;
+  $('bar3').hidden = total === 0;
+  PAYERS.forEach(([key]) => {
+    const pct = total ? sum[key] / total * 100 : 0;
+    $('bar3').querySelector('.' + key).style.width = pct + '%';
+    $('pile_' + key).textContent = brl.format(sum[key]);
+    $('pct_' + key).textContent = total ? Math.round(pct) + '%' : '';
+  });
 
-  body.appendChild(row('total', 'Custo sem o SUS', brl.format(totalPrivate), brl.format(totalPlan)));
-  body.appendChild(row('', 'Você já pagou do bolso', '− ' + brl.format(paid), '− ' + brl.format(paid)));
-  body.appendChild(row('saved', 'O SUS te poupou', brl.format(savedPrivate), brl.format(savedPlan)));
+  // O que saiu do bolso é outra pergunta: o particular mais a mensalidade do plano.
+  const fee = $('premium_box').hidden ? 0 : num('paid_plan');
+  $('pocket_line').textContent = sum.bolso + fee === 0
+    ? 'Do bolso da casa não saiu nada.'
+    : 'Do bolso da casa saíram ' + brl.format(sum.bolso + fee) +
+      (fee ? ': ' + brl.format(sum.bolso) + ' no particular e ' + brl.format(fee) + ' de mensalidade do plano.' : ', tudo no particular.');
 
-  const lo = Math.min(savedPrivate, savedPlan);
-  const hi = Math.max(savedPrivate, savedPlan);
-  $('headline').textContent = lo === hi ? brl.format(lo) : brl.format(lo) + ' a ' + brl.format(hi);
-  $('headline_sub').textContent = hi === 0
-    ? 'Pelo que você informou, você já pagou do bolso tudo o que usou. Se a sua casa usou mais do que estimamos, ajuste o uso logo abaixo.'
-    : 'é quanto o SUS poupou à sua casa em um ano, dependendo de como você pagaria sem ele.';
+  // Só faz sentido comparar com plano para quem não tem um.
+  $('plan_line').hidden = !(state.plano === 'ninguem' && sum.sus > 0);
+  $('plan_line').textContent = 'Outro jeito de olhar: com um plano de saúde para a casa toda, o que veio do SUS sairia por cerca de ' +
+    brl.format(withPlan + premiums()) + ' no ano, somando 12 mensalidades, a coparticipação e o que o plano não cobre.';
 }
 
 /* ---------- patrocínio, Pix e Google Analytics ---------- */

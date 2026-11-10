@@ -4,7 +4,7 @@ Uma calculadora que estima quanto a sua casa gastaria com saúde em um ano se o 
 
 **Use agora:** https://rannyeribatista.github.io/sus-poupa/
 
-Você responde umas doze perguntas simples, e ela mostra a conta: o que você usa de saúde, quanto isso custaria no particular e quanto custaria com um plano.
+Você responde umas quinze perguntas simples, e ela monta o extrato de saúde da sua casa no ano: cada tipo de cuidado em uma linha, com quem pagou por ele. O SUS, o plano ou você.
 
 É uma página só, sem servidor e sem cadastro. As suas respostas não saem do seu aparelho.
 
@@ -14,16 +14,27 @@ Se você aceitar o aviso de cookies, a página carrega o Google Analytics para c
 
 ## A ideia
 
-Perguntar "quanto o SUS me poupa" é perguntar: **quanto eu pagaria pelo mesmo cuidado se ele não existisse?**
+Perguntar "quanto o SUS me poupa" é perguntar: **quanto eu pagaria pelo cuidado que recebi do SUS se ele não existisse?**
 
-Só que "pagar por fora" pode significar duas coisas, e elas dão números diferentes:
+A resposta só vale para o que veio de fato do SUS. Por isso o resultado é um extrato, com uma linha por tipo de cuidado e três pagadores possíveis em cada uma:
 
-1. **Pagar particular**, uma coisa de cada vez: cada consulta, cada exame, cada vacina.
-2. **Ter um plano de saúde**: mensalidade todo mês, mais uma parte de cada uso, mais tudo aquilo que o plano não cobre.
+1. **O SUS pagou:** o que a casa recebeu do SUS. É o número principal da página.
+2. **O plano pagou:** o que o plano de saúde cobriu.
+3. **A casa pagou:** o que saiu do bolso, no particular.
 
-Em um ano tranquilo, pagar particular costuma sair mais barato. Em um ano com parto ou cirurgia, o plano ganha de longe. Por isso a calculadora não escolhe um dos dois: ela mostra os dois e apresenta o resultado como uma faixa.
+Os três são medidos a preço de particular, para falarem a mesma língua, e nunca são subtraídos um do outro. Juntos, formam o valor do cuidado com a saúde da casa no ano, e uma barra mostra a parte de cada um.
 
-Os impostos ficam fora da conta de propósito. Você paga pelo SUS usando ou não, então eles não mudam a comparação.
+Três casas, para ver a diferença:
+
+- Quem só usa o SUS e não pagou nada por fora vê todas as linhas no SUS.
+- Quem tem plano e resolve quase tudo por ele vê no SUS só o que veio de lá (as vacinas, por exemplo), e o resto no plano.
+- Quem mora fora do país e não usou o SUS vê zero no SUS, seja qual for o valor que pagou.
+
+A calculadora preenche o extrato a partir das perguntas, e a pessoa corrige: um toque em SUS, Plano ou Paguei manda a linha inteira para aquele pagador, e as quantidades podem ser divididas (oito consultas, cinco pelo SUS e três pagas). Cada linha tem um total fixo: marcar três consultas como pagas tira três do SUS, e a soma continua a mesma. O total e o preço de cada linha também podem ser trocados ali mesmo.
+
+Abaixo do extrato, a página lista o que o SUS faz e que não vira consulta nem exame: SAMU, vigilância sanitária, controle de epidemias, transplantes, tratamentos de alto custo. Isso não tem preço na conta e não entra em nenhum número.
+
+Os impostos que financiam o SUS ainda não aparecem na página. Eles vão entrar como um terceiro número, separado, quando o valor por pessoa estiver conferido com fonte pública.
 
 ## Como a conta é feita
 
@@ -61,9 +72,28 @@ Depois, cada resposta empurra essa média para cima ou para baixo:
 
 Os eventos raros e caros (parto, internação, cirurgia, tomografia) são perguntados diretamente, porque nenhuma média consegue adivinhá-los, e um só deles pesa mais do que todo o resto junto.
 
-No fim, o uso estimado aparece na tela e pode ser corrigido item por item.
+### 2. Do uso da casa a quem pagou
 
-### 2. Os preços
+Duas perguntas dão o primeiro palpite de quem pagou cada linha: se alguém da casa tem plano de saúde, e onde a casa cuidou da saúde no último ano. É só um ponto de partida. O que vale é o que a pessoa marca no extrato.
+
+| Onde a casa cuidou da saúde | Parte do uso do dia a dia contada como SUS |
+|---|---|
+| Só no SUS | 100% |
+| Mais no SUS | 75% |
+| Meio a meio | 50% |
+| Mais no plano ou no particular | 25% |
+| Não usamos o SUS | 0% |
+
+Essa parte vale para consultas, exames, pronto-socorro, remédios e dentista. Duas coisas fogem da regra:
+
+- **Vacinas** contam inteiras como SUS para todo mundo, menos para quem não usou o SUS. Quem tem plano também se vacina no posto.
+- **Eventos caros** (parto, internação, cirurgia, tomografia) nunca são divididos. Quando a casa misturou SUS com plano ou particular, a calculadora pergunta de cada um: "foi pelo SUS?". Se não foi, a linha vai inteira para o plano ou para o bolso.
+
+O que não veio do SUS vai para o plano, se a casa tem um e ele cobre aquilo, ou para o bolso. Vacina, remédio de uso contínuo e dentista nunca vão para o plano, porque ele não cobre.
+
+As quantidades aceitam uma casa decimal: 0,5 ida ao pronto-socorro quer dizer uma ida a cada dois anos.
+
+### 3. Os preços
 
 Cada item tem um preço-base (o valor "médio" do país) que é ajustado pelo lugar onde você mora:
 
@@ -72,7 +102,7 @@ Cada item tem um preço-base (o valor "médio" do país) que é ajustado pelo lu
 
 Os preços-base:
 
-| Item | Preço-base | Com plano de saúde |
+| Item | Preço-base | Num plano de saúde |
 |---|---|---|
 | Consulta médica | R$ 200 | coparticipação |
 | Pedido de exame de laboratório | R$ 150 | coparticipação |
@@ -88,49 +118,44 @@ Os preços-base:
 
 Mensalidade-base do plano: R$ 250 por criança, R$ 550 por adulto e R$ 1.400 por idoso. Coparticipação: 30%.
 
-### 3. Os dois cenários
+### 4. Os três montes
 
-Para cada item, `valor = quantidade × preço` (remédio contínuo é multiplicado por 12 meses).
-
-**Pagando particular**, o custo é a soma de todos os valores.
-
-**Com plano de saúde**, cada item entra de um jeito:
-
-- *coparticipação*: você paga 30% do valor;
-- *coberto*: você paga zero;
-- *plano não cobre*: você paga o valor inteiro, igual ao particular.
-
-A isso se somam 12 mensalidades por pessoa da casa.
-
-O terceiro grupo é o detalhe que mais passa despercebido: vacinas e remédios de uso contínuo vêm do SUS mesmo para quem tem plano. Num mundo sem SUS, quem tem plano pagaria por eles do bolso, então eles entram na conta dos dois lados.
-
-### 4. O que você já pagou do bolso
-
-As perguntas estimam **tudo** o que a casa usa, no SUS ou fora dele. Se você pagou parte disso no particular, essa parte o SUS não poupou. Por isso o valor que você digita é subtraído dos dois cenários:
+Para cada linha e cada pagador, `valor = quantidade × preço` (remédio contínuo é multiplicado por 12 meses).
 
 ```
-poupado (particular) = custo particular − o que você já pagou
-poupado (plano)      = custo com plano  − o que você já pagou
+o SUS pagou   = soma das quantidades marcadas como SUS × preço
+o plano pagou = soma das quantidades marcadas como plano × preço
+a casa pagou  = soma das quantidades marcadas como pagas × preço
 ```
 
-Nenhum dos dois resultados fica negativo. Se você pagou mais do que o custo estimado, o resultado é zero: quer dizer que a estimativa de uso ficou baixa para a sua casa, não que o SUS te custou alguma coisa.
+O que saiu do bolso da casa é uma pergunta à parte: o que ela pagou no particular mais a mensalidade do plano, se tiver. A mensalidade não entra na barra, porque ela é o preço do que o plano cobriu, não um cuidado a mais.
 
-O número grande no topo é a faixa entre esses dois resultados.
+### 5. A comparação com um plano de saúde
+
+Para a casa em que ninguém tem plano, a página mostra mais uma linha: quanto o que veio do SUS custaria com um plano para todos. Cada item entra de um jeito:
+
+- *coparticipação*: 30% do valor;
+- *coberto*: zero;
+- *plano não cobre*: o valor inteiro, igual ao particular.
+
+A isso se somam 12 mensalidades por pessoa. Essa linha responde a outra pergunta (quanto custa estar coberto, usando ou não), então ela fica separada e não entra no número principal.
 
 ## O que a conta não considera
 
+- **O preço de um país sem SUS.** A conta usa os preços de hoje do particular. Sem o SUS, com muito mais gente procurando o particular, esses preços seriam outros, e ninguém sabe dizer quais.
+- **A proteção de quem não usou.** Quem passou o ano sem precisar do SUS vê zero, mas estava coberto se precisasse. Esse valor existe e não está no número.
 - **Qualidade e espera.** Uma consulta no SUS e uma particular não são o mesmo produto. A conta compara preço, não experiência.
 - **Carências e reajustes** dos planos, e as diferenças entre tipos de plano.
 - **Tratamentos de alto custo** (câncer, hemodiálise, transplante, remédios caros). Nesses casos o valor poupado é muito maior do que qualquer número que a calculadora mostra.
 - **O que o SUS faz por todo mundo ao mesmo tempo:** vigilância sanitária, SAMU, campanhas de vacinação, controle de epidemias.
 
-Ou seja: o resultado tende a ser um piso, não um teto.
+Os dois últimos itens puxam o número para baixo; o primeiro pode puxar para qualquer lado.
 
 ## Como rodar
 
 Baixe o `index.html` e abra no navegador. É só isso: não tem instalação, dependência nem etapa de build.
 
-O código inteiro está nesse arquivo. As tabelas acima correspondem às constantes `ITEMS`, `PLAN`, `UFS` e `STEPS`, e os ajustes das respostas estão na função `estimateUsage`.
+O código inteiro está nesse arquivo. As tabelas acima correspondem às constantes `ITEMS`, `PLAN`, `UFS`, `STEPS` e `SHARE`, e os ajustes das respostas estão na função `estimateUsage`.
 
 ## Como ajudar
 
