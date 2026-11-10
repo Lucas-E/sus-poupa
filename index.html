@@ -292,11 +292,14 @@ const STEPS = [
   { id: 'gravidez', type: 'choice', q: 'No último ano, alguém da casa esteve grávida?',
     options: [['Não', 'nao'], ['Sim, o bebê ainda não nasceu', 'gravida'], ['Sim, o bebê já nasceu', 'nasceu']] },
   { id: 'parto_sus', type: 'yn',  q: 'O parto foi pelo SUS?', show: s => mixed(s) && s.gravidez === 'nasceu' },
-  { id: 'hospital', type: 'choice', q: 'No último ano, alguém da casa ficou internado?',
-    options: [['Não', 'nao'], ['Sim, sem cirurgia', 'internacao'], ['Sim, com cirurgia', 'cirurgia']] },
-  { id: 'hospital_sus', type: 'yn', q: 'Essa internação foi pelo SUS?', show: s => mixed(s) && (s.hospital === 'internacao' || s.hospital === 'cirurgia') },
-  { id: 'tomo',     type: 'yn',   q: 'No último ano, alguém da casa fez um exame de imagem caro, como tomografia ou ressonância?' },
-  { id: 'tomo_sus', type: 'yn',   q: 'Esse exame foi pelo SUS?', show: s => mixed(s) && s.tomo === true },
+  { id: 'hospital', type: 'counts', q: 'No último ano, quantas vezes alguém da casa ficou internado?',
+    fields: [['h_clin', 'Internações sem cirurgia'], ['h_cir', 'Internações com cirurgia']] },
+  { id: 'hospital_sus', type: 'yn', q: s => s.h_clin + s.h_cir > 1 ? 'Essas internações foram pelo SUS?' : 'Essa internação foi pelo SUS?',
+    show: s => mixed(s) && s.h_clin + s.h_cir > 0 },
+  { id: 'tomo',     type: 'counts', q: 'No último ano, quantos exames de imagem caros, como tomografia ou ressonância, a casa fez?',
+    fields: [['n_tomo', 'Tomografias ou ressonâncias']] },
+  { id: 'tomo_sus', type: 'yn',   q: s => s.n_tomo > 1 ? 'Esses exames foram pelo SUS?' : 'Esse exame foi pelo SUS?',
+    show: s => mixed(s) && s.n_tomo > 0 },
   { id: 'vacinas',  type: 'yn',   q: 'As vacinas da casa estão em dia?' },
   { id: 'dentista', type: 'yn',   q: 'A casa costuma ir ao dentista pelo menos uma vez por ano?' },
 ];
@@ -306,7 +309,7 @@ const SHARE = { so_sus: 1, mais_sus: 0.75, meio: 0.5, mais_fora: 0.25, nada: 0 }
 // Só pergunta "foi pelo SUS?" de cada evento caro quando a casa misturou SUS com plano ou particular.
 const mixed = s => s.origem !== 'so_sus' && s.origem !== 'nada';
 
-const state = { uf: '', c: 0, a: 1, i: 0 };
+const state = { uf: '', c: 0, a: 1, i: 0, h_clin: 0, h_cir: 0, n_tomo: 0 };
 let idx = 0;
 
 const $ = id => document.getElementById(id);
@@ -451,7 +454,7 @@ function render() {
   const step = steps[idx];
   setBar(idx / steps.length);
   $('count').textContent = 'Pergunta ' + (idx + 1) + ' de ' + steps.length;
-  $('question').textContent = step.q;
+  $('question').textContent = typeof step.q === 'function' ? step.q(state) : step.q;
   $('back').style.visibility = idx === 0 ? 'hidden' : 'visible';
   const box = $('answer');
   box.textContent = '';
@@ -492,6 +495,17 @@ function render() {
     box.appendChild(grid);
     $('next').disabled = state.c + state.a + state.i === 0;
   }
+
+  if (step.type === 'counts') {   // "quantas vezes?": um contador por tipo, começando do zero
+    const grid = el('div', { className: 'grid' });
+    step.fields.forEach(([key, label]) => {
+      const f = field('k_' + key, label, state[key]);
+      f.querySelector('input').oninput = e => { state[key] = parse(e.target.value); };
+      grid.appendChild(f);
+    });
+    box.appendChild(grid);
+    $('next').disabled = false;
+  }
 }
 
 function advance() {
@@ -525,10 +539,10 @@ function estimateUse() {
   if (!s.vacinas)  { q.vacina_c *= 0.3; q.vacina_a *= 0.3; }
   if (!s.dentista) { q.dentista = 0; }
 
-  q.tomo = s.tomo ? 1 : 0;
+  q.tomo = s.n_tomo;
   q.parto = s.gravidez === 'nasceu' ? 1 : 0;
-  q.cirurgia = s.hospital === 'cirurgia' ? 1 : 0;
-  q.diaria = s.hospital === 'internacao' ? 6 : 0;   // parto e cirurgia já trazem a internação no preço
+  q.cirurgia = s.h_cir;
+  q.diaria = 6 * s.h_clin;   // 6 dias por internação sem cirurgia; parto e cirurgia já trazem a internação no preço
   return q;
 }
 

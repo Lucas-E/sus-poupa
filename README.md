@@ -65,13 +65,13 @@ Depois, cada resposta empurra essa média para cima ou para baixo:
 | Urgência mais de duas vezes no ano | idas ao pronto-socorro × 2,5 (no mínimo 3) |
 | Gravidez no último ano | +7 consultas; +1 ultrassom; +3 pedidos de laboratório |
 | …e o bebê já nasceu | +1 parto |
-| Internação sem cirurgia | +6 dias de internação |
-| Internação com cirurgia | +1 cirurgia |
-| Fez tomografia ou ressonância | +1 exame |
+| Cada internação sem cirurgia | +6 dias de internação |
+| Cada internação com cirurgia | +1 cirurgia |
+| Cada tomografia ou ressonância | +1 exame |
 | Vacinas atrasadas | doses de vacina × 0,3 |
 | Não vai ao dentista todo ano | consultas no dentista = 0 |
 
-Os eventos raros e caros (parto, internação, cirurgia, tomografia) são perguntados diretamente, porque nenhuma média consegue adivinhá-los, e um só deles pesa mais do que todo o resto junto.
+Os eventos raros e caros (parto, internação, cirurgia, tomografia) são perguntados diretamente, porque nenhuma média consegue adivinhá-los, e um só deles pesa mais do que todo o resto junto. Internações e exames caros são perguntados em quantidade ("quantas vezes?"), porque uma casa pode ter mais de um no mesmo ano.
 
 O parto e a cirurgia não somam dias de internação: o preço deles já é o do pacote, com as diárias dentro.
 
@@ -90,7 +90,7 @@ Duas perguntas dão o primeiro palpite de quem pagou cada linha: se alguém da c
 Essa parte vale para consultas, exames, pronto-socorro, remédios e dentista. Duas coisas fogem da regra:
 
 - **Vacinas** contam inteiras como SUS para todo mundo, menos para quem não usou o SUS. Quem tem plano também se vacina no posto.
-- **Eventos caros** (parto, internação, cirurgia, tomografia) nunca são divididos. Quando a casa misturou SUS com plano ou particular, a calculadora pergunta de cada um: "foi pelo SUS?". Se não foi, a linha vai inteira para o plano ou para o bolso.
+- **Eventos caros** (parto, internação, cirurgia, tomografia) nunca são divididos. Quando a casa misturou SUS com plano ou particular, a calculadora pergunta de cada tipo: "foi pelo SUS?". A resposta vale para todas as internações (ou todos os exames) do ano; se uma foi pelo SUS e outra não, a pessoa divide no extrato. Se não foi, a linha vai inteira para o plano ou para o bolso.
 
 O que não veio do SUS vai para o plano, se a casa tem um e ele cobre aquilo, ou para o bolso. Vacina, remédio de uso contínuo e dentista nunca vão para o plano, porque ele não cobre.
 

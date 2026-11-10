@@ -80,8 +80,8 @@ Para contexto: 53,1 milhões de pessoas têm plano médico, 24,9% da população
 | Bebê de até 2 anos | +4,5 consultas, +12 doses de vacina | Rotina oficial: 7 consultas no 1º ano e 2 no 2º [27]. De 22 a 28 doses antes dos 2 anos [22] | forte |
 | Gravidez | +7 consultas, +1 ultrassom, +3 pedidos de laboratório | Mínimo de 7 consultas [26]; 1 ultrassom, não obrigatório; 3 rodadas de exames [25] | forte |
 | O bebê nasceu | +1 parto | Os dias de hospital já estão no pacote do parto. No SUS: 2,1 dias no parto normal, 2,6 na cesárea [18] | forte |
-| Internação sem cirurgia | +6 dias | SUS: 6,4 dias em média na internação clínica [18] | forte |
-| Internação com cirurgia | +1 cirurgia | Os dias já estão no pacote. No SUS: 3,2 dias em média [18] | forte |
+| Cada internação sem cirurgia | +6 dias | SUS: 6,4 dias em média na internação clínica [18] | forte |
+| Cada internação com cirurgia | +1 cirurgia | Os dias já estão no pacote. No SUS: 3,2 dias em média [18] | forte |
 | Não vai ao médico sem estar doente | consultas × 0,6; exames × 0,5 | Nenhuma fonte. Estimativa | fraca |
 | Condição crônica | consultas × 1,6; laboratório × 2; +2 remédios | Nenhuma fonte para os multiplicadores. Estimativa | fraca |
 | Urgência mais de duas vezes | pronto-socorro × 2,5, mínimo 3 | Nenhuma fonte. Estimativa | fraca |
