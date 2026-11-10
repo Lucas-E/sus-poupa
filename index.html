@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quanto o SUS te poupa</title>
+<style>
+  :root {
+    --bg: #f6f7f5; --card: #ffffff; --ink: #16201a; --muted: #5d6b62;
+    --line: #dfe4df; --accent: #0a7d48; --accent-ink: #ffffff; --accent-soft: #e3f3ea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111613; --card: #1a211c; --ink: #e9efea; --muted: #98a69c;
+      --line: #2b352e; --accent: #4fd08e; --accent-ink: #0c1a12; --accent-soft: #17301f;
+    }
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  #bar { position: fixed; inset: 0 0 auto 0; height: 6px; background: var(--line); z-index: 5; }
+  #bar div { height: 100%; width: 0; background: var(--accent); transition: width .25s ease; }
+  main { max-width: 760px; margin: 0 auto; padding: 40px 16px 64px; }
+  h1 { font-size: 1.9rem; line-height: 1.15; margin: 0 0 6px; letter-spacing: -0.02em; }
+  h2 { font-size: 1.05rem; margin: 0 0 4px; }
+  p.lead, p.hint { color: var(--muted); margin: 0 0 16px; }
+  p.hint { font-size: 0.9rem; }
+  section {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 14px; padding: 20px; margin-top: 16px;
+  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+  label { display: block; font-size: 0.88rem; color: var(--muted); }
+  input, select {
+    display: block; width: 100%; margin-top: 4px; padding: 10px;
+    font: inherit; color: var(--ink); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  .numwrap { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+  .numwrap input { margin-top: 0; flex: 1; min-width: 0; }
+  .numwrap.count input { text-align: center; }
+  .numwrap .affix { color: var(--muted); font-size: 0.95rem; }
+  button.step { flex: none; width: 42px; height: 42px; padding: 0; font-size: 1.25rem; line-height: 1; }
+  input:focus, select:focus, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  /* perguntas */
+  #quiz { padding: 28px 20px; min-height: 300px; display: flex; flex-direction: column; }
+  #quiz .count { font-size: 0.82rem; color: var(--muted); margin-bottom: 8px; }
+  #quiz h2 { font-size: 1.45rem; line-height: 1.25; letter-spacing: -0.01em; margin-bottom: 20px; }
+  #answer { flex: 1; }
+  .yn { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .choices { display: grid; gap: 12px; }
+  .choices button { text-align: left; }
+  button {
+    font: inherit; font-weight: 600; cursor: pointer; border-radius: 10px;
+    padding: 14px 18px; border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+  }
+  button.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+  button.picked { border-color: var(--accent); background: var(--accent-soft); }
+  button.link { border: 0; background: none; padding: 8px 0; color: var(--muted); font-weight: 500; }
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+
+  /* resultado */
+  .result { background: var(--accent-soft); border-color: transparent; text-align: center; }
+  .result .big {
+    font-size: clamp(1.7rem, 6vw, 2.6rem); font-weight: 700; color: var(--accent);
+    letter-spacing: -0.02em; line-height: 1.15; font-variant-numeric: tabular-nums;
+  }
+  .result .sub { color: var(--muted); font-size: 0.92rem; margin-top: 4px; }
+  .tablewrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th, td { padding: 9px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; white-space: normal; }
+  thead th { font-size: 0.82rem; color: var(--muted); font-weight: 600; }
+  td small { display: block; color: var(--muted); font-size: 0.75rem; }
+  tr.total td { font-weight: 700; border-top: 2px solid var(--line); }
+  tr.saved td { font-weight: 700; color: var(--accent); border-bottom: 0; font-size: 1.05rem; }
+  .paid { max-width: 320px; }
+  details summary { cursor: pointer; font-weight: 600; }
+  details .grid { margin-top: 14px; }
+  footer { color: var(--muted); font-size: 0.82rem; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div id="bar"><div id="bar_fill"></div></div>
+<main>
+  <h1>Quanto o SUS te poupa?</h1>
+  <p class="lead">Uma estimativa de quanto a sua casa gastaria em um ano se o SUS não existisse.</p>
+
+  <section id="quiz">
+    <div class="count" id="count"></div>
+    <h2 id="question"></h2>
+    <div id="answer"></div>
+    <div class="nav">
+      <button class="link" id="back">← Voltar</button>
+      <button class="primary" id="next">Continuar</button>
+    </div>
+  </section>
+
+  <div id="results" hidden>
+    <section class="result">
+      <div class="big" id="headline"></div>
+      <div class="sub" id="headline_sub"></div>
+    </section>
+
+    <section>
+      <h2>Quanto você pagou do próprio bolso?</h2>
+      <p class="hint">Consultas, exames, remédios ou qualquer outra coisa de saúde que você pagou no particular em 12 meses.</p>
+      <div class="paid" id="paid_box"></div>
+    </section>
+
+    <section>
+      <h2>A conta</h2>
+      <p class="hint" id="table_hint"></p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th></th><th>Pagando particular</th><th>Com plano de saúde</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <details>
+        <summary>Ajustar o uso estimado</summary>
+        <p class="hint" style="margin-top:10px">Quantidades por ano para a casa toda, estimadas pelas suas respostas.</p>
+        <div class="grid" id="usage"></div>
+      </details>
+    </section>
+
+    <section>
+      <details>
+        <summary>Ajustar preços</summary>
+        <p class="hint" style="margin-top:10px">Valores médios aproximados para a sua região. Troque pelos preços da sua cidade se souber.</p>
+        <div class="grid" id="prices"></div>
+      </details>
+    </section>
+
+    <button class="link" id="redo">← Refazer as perguntas</button>
+  </div>
+
+  <footer>Estimativa simples, sem valor oficial. Nada do que você digita sai do seu aparelho.</footer>
+</main>
+
+<script>
+// plan: 'copay' = plano cobre com coparticipação · 'full' = plano cobre tudo · 'none' = plano não cobre
+// per: uso médio por ano para cada criança (c), adulto (a) e idoso (i)
+const ITEMS = [
+  { id: 'consulta', label: 'Consultas médicas',               unit: 'por consulta', price: 200,   plan: 'copay', per: { c: 4, a: 2,   i: 5 } },
+  { id: 'lab',      label: 'Pedidos de exame de laboratório', unit: 'por pedido',   price: 150,   plan: 'copay', per: { c: 1, a: 1,   i: 3 } },
+  { id: 'imagem',   label: 'Raio-x ou ultrassom',             unit: 'por exame',    price: 150,   plan: 'copay', per: { c: 0, a: 0.5, i: 1 } },
+  { id: 'tomo',     label: 'Tomografia ou ressonância',       unit: 'por exame',    price: 800,   plan: 'copay', per: { c: 0, a: 0,   i: 0 } },
+  { id: 'ps',       label: 'Idas ao pronto-socorro ou UPA',   unit: 'por ida',      price: 400,   plan: 'copay', per: { c: 1, a: 0.5, i: 1 } },
+  { id: 'vacina',   label: 'Doses de vacina',                 unit: 'por dose',     price: 250,   plan: 'none',  per: { c: 2, a: 1,   i: 2 } },
+  { id: 'remedio',  label: 'Remédios de uso contínuo',        unit: 'por remédio, por mês', price: 60, plan: 'none', times: 12, per: { c: 0, a: 0, i: 2 } },
+  { id: 'dentista', label: 'Consultas no dentista',           unit: 'por consulta', price: 200,   plan: 'none',  per: { c: 1, a: 1,   i: 1 } },
+  { id: 'diaria',   label: 'Dias de internação',              unit: 'por dia',      price: 2500,  plan: 'full',  per: { c: 0, a: 0,   i: 0 } },
+  { id: 'cirurgia', label: 'Cirurgias',                       unit: 'por cirurgia', price: 15000, plan: 'full',  per: { c: 0, a: 0,   i: 0 } },
+  { id: 'parto',    label: 'Partos',                          unit: 'por parto',    price: 12000, plan: 'full',  per: { c: 0, a: 0,   i: 0 } },
+];
+const PLAN = [
+  { id: 'plan_c', label: 'Plano de saúde, criança (por mês)', price: 250 },
+  { id: 'plan_a', label: 'Plano de saúde, adulto (por mês)',  price: 550 },
+  { id: 'plan_i', label: 'Plano de saúde, idoso (por mês)',   price: 1400 },
+];
+const COPAY = 30;
+
+// estado → nível de preço (1 = média)
+const UFS = [
+  ['AC', 'Acre', .85], ['AL', 'Alagoas', .85], ['AP', 'Amapá', .85], ['AM', 'Amazonas', .85],
+  ['BA', 'Bahia', .85], ['CE', 'Ceará', .85], ['DF', 'Distrito Federal', 1.2], ['ES', 'Espírito Santo', 1],
+  ['GO', 'Goiás', 1], ['MA', 'Maranhão', .85], ['MT', 'Mato Grosso', 1], ['MS', 'Mato Grosso do Sul', 1],
+  ['MG', 'Minas Gerais', 1], ['PA', 'Pará', .85], ['PB', 'Paraíba', .85], ['PR', 'Paraná', 1],
+  ['PE', 'Pernambuco', .85], ['PI', 'Piauí', .85], ['RJ', 'Rio de Janeiro', 1.2], ['RN', 'Rio Grande do Norte', .85],
+  ['RS', 'Rio Grande do Sul', 1], ['RO', 'Rondônia', .85], ['RR', 'Roraima', .85], ['SC', 'Santa Catarina', 1],
+  ['SP', 'São Paulo', 1.2], ['SE', 'Sergipe', .85], ['TO', 'Tocantins', .85],
+];
+const INTERIOR = 0.9;
+
+const STEPS = [
+  { id: 'uf',       type: 'uf',   q: 'Em que estado você mora?' },
+  { id: 'capital',  type: 'choice', q: 'Em que parte do estado você mora?',
+    options: [['Capital ou região metropolitana', 'capital'], ['Interior', 'interior']] },
+  { id: 'casa',     type: 'casa', q: 'Quem mora na sua casa?' },
+  { id: 'bebe',     type: 'yn',   q: 'Tem bebê de até 2 anos em casa?', show: s => s.c > 0 },
+  { id: 'checkup',  type: 'yn',   q: 'Alguém da casa costuma ir ao médico mesmo sem estar doente?' },
+  { id: 'cronico',  type: 'yn',   q: 'Alguém da casa tem uma condição que pede acompanhamento, como diabetes, pressão alta ou asma?' },
+  { id: 'ps',       type: 'yn',   q: 'No último ano, alguém da casa precisou de atendimento de urgência mais de duas vezes?' },
+  { id: 'gravidez', type: 'choice', q: 'No último ano, alguém da casa esteve grávida?',
+    options: [['Não', 'nao'], ['Sim, o bebê ainda não nasceu', 'gravida'], ['Sim, o bebê já nasceu', 'nasceu']] },
+  { id: 'hospital', type: 'choice', q: 'No último ano, alguém da casa ficou internado?',
+    options: [['Não', 'nao'], ['Sim, sem cirurgia', 'internacao'], ['Sim, com cirurgia', 'cirurgia']] },
+  { id: 'tomo',     type: 'yn',   q: 'No último ano, alguém da casa fez um exame de imagem caro, como tomografia ou ressonância?' },
+  { id: 'vacinas',  type: 'yn',   q: 'As vacinas da casa estão em dia?' },
+  { id: 'dentista', type: 'yn',   q: 'A casa costuma ir ao dentista pelo menos uma vez por ano?' },
+];
+
+const state = { uf: '', c: 0, a: 1, i: 0 };
+let idx = 0;
+
+const $ = id => document.getElementById(id);
+const parse = v => parseInt(String(v).replace(/\D/g, ''), 10) || 0;
+const fmt = n => Math.max(0, Math.round(n)).toLocaleString('pt-BR');
+const num = id => parse($(id).value);
+const setVal = (id, n) => { $(id).value = fmt(n); };
+const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+const el = (tag, props, kids) => {
+  const e = Object.assign(document.createElement(tag), props || {});
+  (kids || []).forEach(k => e.appendChild(k));
+  return e;
+};
+const visible = () => STEPS.filter(s => !s.show || s.show(state));
+
+// Todo campo numérico se comporta igual: só aceita dígitos, mostra separador de milhar,
+// seleciona tudo ao receber foco e volta para 0 se ficar vazio.
+// kind: 'count' (com botões − e +) · 'money' (prefixo R$) · 'percent' (sufixo %)
+function field(id, label, value, kind) {
+  kind = kind || 'count';
+  const input = el('input', { type: 'text', id, inputMode: 'numeric', autocomplete: 'off', maxLength: 9, value: fmt(value) });
+  input.addEventListener('input', () => {
+    const digits = input.value.replace(/\D/g, '');
+    input.value = digits === '' ? '' : fmt(parseInt(digits, 10));
+  });
+  input.addEventListener('focus', () => input.select());
+  input.addEventListener('blur', () => { if (input.value === '') input.value = '0'; });
+
+  const bump = delta => {
+    input.value = fmt(parse(input.value) + delta);
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  };
+  const step = (text, delta, name) => {
+    const b = el('button', { type: 'button', className: 'step', textContent: text });
+    b.setAttribute('aria-label', name + ': ' + label);
+    b.onclick = () => bump(delta);
+    return b;
+  };
+  const affix = text => el('span', { className: 'affix', textContent: text });
+
+  const parts = kind === 'count' ? [step('−', -1, 'Diminuir'), input, step('+', 1, 'Aumentar')]
+              : kind === 'money' ? [affix('R$'), input]
+              : [input, affix('%')];
+  const l = el('label', { textContent: label });
+  l.htmlFor = id;
+  return el('div', { className: 'field' }, [l, el('div', { className: 'numwrap ' + kind }, parts)]);
+}
+
+ITEMS.forEach(it => {
+  $('usage').appendChild(field('q_' + it.id, it.label, 0, 'count'));
+  $('prices').appendChild(field('p_' + it.id, it.label + ' (' + it.unit + ')', it.price, 'money'));
+});
+PLAN.forEach(p => $('prices').appendChild(field('p_' + p.id, p.label, p.price, 'money')));
+$('prices').appendChild(field('p_copay', 'Coparticipação do plano', COPAY, 'percent'));
+$('paid_box').appendChild(field('paid', 'Valor pago em 12 meses', 0, 'money'));
+
+/* ---------- perguntas ---------- */
+
+function setBar(fraction) { $('bar_fill').style.width = Math.round(fraction * 100) + '%'; }
+
+function render() {
+  const steps = visible();
+  const step = steps[idx];
+  setBar(idx / steps.length);
+  $('count').textContent = 'Pergunta ' + (idx + 1) + ' de ' + steps.length;
+  $('question').textContent = step.q;
+  $('back').style.visibility = idx === 0 ? 'hidden' : 'visible';
+  const box = $('answer');
+  box.textContent = '';
+  const isChoice = step.type === 'yn' || step.type === 'choice';
+  $('next').hidden = isChoice;
+
+  if (isChoice) {
+    const options = step.options || [['Sim', true], ['Não', false]];
+    const buttons = options.map(([text, value]) => {
+      const b = el('button', { textContent: text });
+      if (state[step.id] === value) b.className = 'picked';
+      b.onclick = () => { state[step.id] = value; advance(); };
+      return b;
+    });
+    box.appendChild(el('div', { className: step.options ? 'choices' : 'yn' }, buttons));
+  }
+
+  if (step.type === 'uf') {
+    const sel = el('select', { id: 'uf_select' });
+    sel.appendChild(el('option', { value: '', textContent: 'Escolha o estado' }));
+    UFS.forEach(([code, name]) => sel.appendChild(el('option', { value: code, textContent: name })));
+    sel.value = state.uf;
+    sel.onchange = () => { state.uf = sel.value; $('next').disabled = !state.uf; };
+    box.appendChild(sel);
+    $('next').disabled = !state.uf;
+  }
+
+  if (step.type === 'casa') {
+    const grid = el('div', { className: 'grid' });
+    [['c', 'Crianças e adolescentes (0–18)'], ['a', 'Adultos (19–58)'], ['i', 'Idosos (59+)']].forEach(([k, label]) => {
+      const f = field('n_' + k, label, state[k]);
+      f.querySelector('input').oninput = e => {
+        state[k] = parse(e.target.value);
+        $('next').disabled = state.c + state.a + state.i === 0;
+      };
+      grid.appendChild(f);
+    });
+    box.appendChild(grid);
+    $('next').disabled = state.c + state.a + state.i === 0;
+  }
+}
+
+function advance() {
+  if (idx + 1 >= visible().length) return finish();
+  idx++;
+  render();
+}
+
+$('next').onclick = advance;
+$('back').onclick = () => { if (idx > 0) { idx--; render(); } };
+$('redo').onclick = () => {
+  idx = 0;
+  $('results').hidden = true;
+  $('quiz').hidden = false;
+  render();
+};
+
+/* ---------- das respostas para o uso estimado ---------- */
+
+function estimateUsage() {
+  const s = state;
+  const q = {};
+  ITEMS.forEach(it => { q[it.id] = s.c * it.per.c + s.a * it.per.a + s.i * it.per.i; });
+
+  if (!s.checkup)  { q.consulta *= 0.6; q.lab *= 0.5; q.imagem *= 0.5; }       // abaixo da média
+  if (s.cronico)   { q.consulta *= 1.6; q.lab *= 2; q.remedio += 2; }           // acima da média
+  if (s.c > 0 && s.bebe) { q.consulta += 6; q.vacina += 8; }
+  if (s.ps)        { q.ps = Math.max(q.ps * 2.5, 3); }
+  if (s.gravidez === 'gravida' || s.gravidez === 'nasceu') { q.consulta += 8; q.imagem += 4; q.lab += 3; }
+  if (s.gravidez === 'nasceu') { q.parto = 1; q.diaria += 2; }
+  if (s.hospital === 'internacao' || s.hospital === 'cirurgia') { q.diaria += 3; }
+  if (s.hospital === 'cirurgia') { q.cirurgia = 1; }
+  if (s.tomo)      { q.tomo = 1; }
+  if (!s.vacinas)  { q.vacina *= 0.3; }
+  if (!s.dentista) { q.dentista = 0; }
+  return q;
+}
+
+function priceFactor() {
+  const uf = UFS.find(u => u[0] === state.uf);
+  return (uf ? uf[2] : 1) * (state.capital === 'capital' ? 1 : INTERIOR);
+}
+
+function finish() {
+  const q = estimateUsage();
+  const f = priceFactor();
+  const round5 = v => Math.max(5, Math.round(v * f / 5) * 5);
+  ITEMS.forEach(it => {
+    setVal('q_' + it.id, q[it.id]);
+    setVal('p_' + it.id, round5(it.price));
+  });
+  PLAN.forEach(p => setVal('p_' + p.id, round5(p.price)));
+
+  const uf = UFS.find(u => u[0] === state.uf);
+  $('table_hint').textContent = 'O mesmo uso, pago de duas formas diferentes, com preços médios de ' +
+    (uf ? uf[1] : 'sua região') + (state.capital === 'capital' ? ' (capital ou região metropolitana).' : ' (interior).');
+
+  $('quiz').hidden = true;
+  $('results').hidden = false;
+  setBar(1);
+  calc();
+  window.scrollTo(0, 0);
+}
+
+/* ---------- a conta ---------- */
+
+function row(cls, label, a, b, noteB) {
+  const tr = el('tr', { className: cls || '' });
+  [label, a, b].forEach((text, n) => {
+    const td = el('td', { textContent: text });
+    if (n === 2 && noteB) td.appendChild(el('small', { textContent: noteB }));
+    tr.appendChild(td);
+  });
+  return tr;
+}
+
+function calc() {
+  const copay = Math.min(100, num('p_copay')) / 100;
+  const body = $('rows');
+  body.textContent = '';
+  let totalPrivate = 0, totalPlan = 0;
+
+  ITEMS.forEach(it => {
+    const qty = num('q_' + it.id);
+    if (!qty) return;
+    const value = qty * num('p_' + it.id) * (it.times || 1);
+    const planValue = it.plan === 'copay' ? value * copay : it.plan === 'none' ? value : 0;
+    const note = it.plan === 'copay' ? 'coparticipação' : it.plan === 'none' ? 'plano não cobre' : 'coberto pelo plano';
+    totalPrivate += value;
+    totalPlan += planValue;
+    body.appendChild(row('', it.label + ' (' + qty + ')', brl.format(value), brl.format(planValue), note));
+  });
+
+  const premiums = 12 * (state.c * num('p_plan_c') + state.a * num('p_plan_a') + state.i * num('p_plan_i'));
+  totalPlan += premiums;
+  body.appendChild(row('', 'Mensalidades do plano (12 meses)', '—', brl.format(premiums)));
+
+  const paid = num('paid');
+  const savedPrivate = totalPrivate - paid;
+  const savedPlan = totalPlan - paid;
+
+  body.appendChild(row('total', 'Custo sem o SUS', brl.format(totalPrivate), brl.format(totalPlan)));
+  body.appendChild(row('', 'Você já pagou do bolso', '− ' + brl.format(paid), '− ' + brl.format(paid)));
+  body.appendChild(row('saved', 'O SUS te poupou', brl.format(savedPrivate), brl.format(savedPlan)));
+
+  const lo = Math.max(0, Math.min(savedPrivate, savedPlan));
+  const hi = Math.max(0, Math.max(savedPrivate, savedPlan));
+  $('headline').textContent = lo === hi ? brl.format(lo) : brl.format(lo) + ' a ' + brl.format(hi);
+  $('headline_sub').textContent = hi === 0
+    ? 'Pelo que você informou, você já pagou do bolso tudo o que usou.'
+    : 'é quanto o SUS poupou à sua casa em um ano, dependendo de como você pagaria sem ele.';
+}
+
+$('results').addEventListener('input', calc);
+render();
+</script>
+</body>
+</html>
