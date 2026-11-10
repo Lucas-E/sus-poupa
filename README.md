@@ -4,13 +4,13 @@ Uma calculadora que estima quanto a sua casa gastaria com saúde em um ano se o 
 
 **Use agora:** https://rannyeribatista.github.io/sus-poupa/
 
-Você responde umas quinze perguntas simples, e ela monta o extrato de saúde da sua casa no ano: cada tipo de cuidado em uma linha, com quem pagou por ele. O SUS, o plano ou você.
+Você responde de doze a dezesseis perguntas simples, e ela monta o extrato de saúde da sua casa no ano: cada tipo de cuidado em uma linha, com quem pagou por ele. O SUS, o plano ou você.
 
 É uma página só, sem servidor e sem cadastro. As suas respostas não saem do seu aparelho.
 
 Se você aceitar o aviso de cookies, a página carrega o Google Analytics para contar as visitas. Ele não recebe o que você respondeu.
 
-> **É uma estimativa, não um dado oficial.** Os preços e as médias de uso que vêm preenchidos são aproximações do autor e ainda não foram conferidos com fontes públicas. Todos podem ser trocados na própria página, e correções são muito bem-vindas (veja [Como ajudar](#como-ajudar)).
+> **É uma estimativa, não um dado oficial, e este site não é do governo.** Cada número tem a sua fonte pública em [FONTES.md](FONTES.md), com o quanto dá para confiar nele. Cinco preços não têm pesquisa pública (consulta, raio-x ou ultrassom, tomografia, pronto-socorro e dentista): são estimativa, e a página avisa isso na própria linha. Tudo pode ser trocado na página, e correções são muito bem-vindas (veja [Como ajudar](#como-ajudar)).
 
 ## A ideia
 
@@ -34,7 +34,7 @@ A calculadora preenche o extrato a partir das perguntas, e a pessoa corrige: um 
 
 Abaixo do extrato, a página lista o que o SUS faz e que não vira consulta nem exame: SAMU, vigilância sanitária, controle de epidemias, transplantes, tratamentos de alto custo. Isso não tem preço na conta e não entra em nenhum número.
 
-Os impostos que financiam o SUS ainda não aparecem na página. Eles vão entrar como um terceiro número, separado, quando o valor por pessoa estiver conferido com fonte pública.
+O SUS não é de graça, e a página diz quanto ele custa: o gasto público com saúde por pessoa, vezes o número de pessoas da casa. É um número à parte, a média do país, e não entra em nenhuma das contas acima.
 
 ## Como a conta é feita
 
@@ -49,8 +49,9 @@ A média de partida, por pessoa, por ano:
 | Consultas médicas | 4 | 2 | 5 |
 | Pedidos de exame de laboratório | 1 | 1 | 3 |
 | Raio-x ou ultrassom | 0 | 0,5 | 1 |
-| Idas ao pronto-socorro ou UPA | 1 | 0,5 | 1 |
-| Doses de vacina | 2 | 1 | 2 |
+| Idas ao pronto-socorro ou UPA | 1 | 1 | 1 |
+| Doses de vacina de criança | 0,6 | 0 | 0 |
+| Doses de vacina de adulto ou idoso | 0 | 0,1 | 3 |
 | Remédios de uso contínuo | 0 | 0 | 2 |
 | Consultas no dentista | 1 | 1 | 1 |
 
@@ -60,17 +61,19 @@ Depois, cada resposta empurra essa média para cima ou para baixo:
 |---|---|
 | Ninguém vai ao médico sem estar doente | consultas × 0,6; laboratório e raio-x/ultrassom × 0,5 |
 | Alguém tem condição crônica | consultas × 1,6; laboratório × 2; +2 remédios contínuos |
-| Tem bebê de até 2 anos | +6 consultas; +8 doses de vacina |
+| Tem bebê de até 2 anos | +4,5 consultas; +12 doses de vacina de criança |
 | Urgência mais de duas vezes no ano | idas ao pronto-socorro × 2,5 (no mínimo 3) |
-| Gravidez no último ano | +8 consultas; +4 ultrassons; +3 pedidos de laboratório |
-| …e o bebê já nasceu | +1 parto; +2 dias de internação |
-| Internação sem cirurgia | +3 dias de internação |
-| Internação com cirurgia | +3 dias de internação; +1 cirurgia |
+| Gravidez no último ano | +7 consultas; +1 ultrassom; +3 pedidos de laboratório |
+| …e o bebê já nasceu | +1 parto |
+| Internação sem cirurgia | +6 dias de internação |
+| Internação com cirurgia | +1 cirurgia |
 | Fez tomografia ou ressonância | +1 exame |
 | Vacinas atrasadas | doses de vacina × 0,3 |
 | Não vai ao dentista todo ano | consultas no dentista = 0 |
 
 Os eventos raros e caros (parto, internação, cirurgia, tomografia) são perguntados diretamente, porque nenhuma média consegue adivinhá-los, e um só deles pesa mais do que todo o resto junto.
+
+O parto e a cirurgia não somam dias de internação: o preço deles já é o do pacote, com as diárias dentro.
 
 ### 2. Do uso da casa a quem pagou
 
@@ -95,28 +98,26 @@ As quantidades aceitam uma casa decimal: 0,5 ida ao pronto-socorro quer dizer um
 
 ### 3. Os preços
 
-Cada item tem um preço-base (o valor "médio" do país) que é ajustado pelo lugar onde você mora:
+Cada tipo de cuidado tem um preço só, para o país inteiro. Não existe fonte pública para a diferença de preço do particular entre estados ou entre capital e interior, então a calculadora não inventa uma. Quem conhece o preço da sua cidade troca na própria linha.
 
-- **Estado:** SP, RJ e DF usam o preço-base × 1,2. Sul, Sudeste (menos SP e RJ) e Centro-Oeste usam × 1,0. Norte e Nordeste usam × 0,85.
-- **Interior:** fora da capital e da região metropolitana, mais × 0,9.
-
-Os preços-base:
-
-| Item | Preço-base | Num plano de saúde |
+| Item | Preço | Num plano de saúde |
 |---|---|---|
 | Consulta médica | R$ 200 | coparticipação |
-| Pedido de exame de laboratório | R$ 150 | coparticipação |
+| Pedido de exame de laboratório | R$ 90 | coparticipação |
 | Raio-x ou ultrassom | R$ 150 | coparticipação |
 | Tomografia ou ressonância | R$ 800 | coparticipação |
 | Ida ao pronto-socorro | R$ 400 | coparticipação |
-| Dose de vacina | R$ 250 | plano não cobre |
-| Remédio de uso contínuo (por mês) | R$ 60 | plano não cobre |
+| Dose de vacina de criança | R$ 350 | plano não cobre |
+| Dose de vacina de adulto ou idoso | R$ 85 | plano não cobre |
+| Remédio de uso contínuo (por mês) | R$ 25 | plano não cobre |
 | Consulta no dentista | R$ 200 | plano não cobre |
-| Dia de internação | R$ 2.500 | coberto |
-| Cirurgia | R$ 15.000 | coberto |
-| Parto | R$ 12.000 | coberto |
+| Dia de internação sem cirurgia | R$ 2.500 | coberto |
+| Cirurgia, já com a internação | R$ 15.000 | coberto |
+| Parto, com hospital e médicos | R$ 20.000 | coberto |
 
-Mensalidade-base do plano: R$ 250 por criança, R$ 550 por adulto e R$ 1.400 por idoso. Coparticipação: 30%.
+A mensalidade do plano é a única coisa que muda com o estado, porque para ela existe dado oficial por região (ANS, junho de 2026): de R$ 340 a R$ 475 por criança, de R$ 720 a R$ 960 por adulto e de R$ 1.865 a R$ 2.490 por idoso. Coparticipação: 30%.
+
+De onde vem cada um desses números, e o quanto dá para confiar nele, está em [FONTES.md](FONTES.md).
 
 ### 4. Os três montes
 
@@ -140,6 +141,12 @@ Para a casa em que ninguém tem plano, a página mostra mais uma linha: quanto o
 
 A isso se somam 12 mensalidades por pessoa. Essa linha responde a outra pergunta (quanto custa estar coberto, usando ou não), então ela fica separada e não entra no número principal.
 
+### 6. Quanto o SUS custa
+
+O gasto público com saúde no Brasil, somando União, estados e municípios, foi de R$ 1.879 por pessoa em 2022 (IPEA). A página mostra esse valor vezes o número de pessoas da casa.
+
+É a média do país, não o imposto que aquela casa pagou: quem ganha e consome mais paga mais. Por isso o número aparece sozinho e não é subtraído do que o SUS pagou.
+
 ## O que a conta não considera
 
 - **O preço de um país sem SUS.** A conta usa os preços de hoje do particular. Sem o SUS, com muito mais gente procurando o particular, esses preços seriam outros, e ninguém sabe dizer quais.
@@ -155,13 +162,15 @@ Os dois últimos itens puxam o número para baixo; o primeiro pode puxar para qu
 
 Baixe o `index.html` e abra no navegador. É só isso: não tem instalação, dependência nem etapa de build.
 
-O código inteiro está nesse arquivo. As tabelas acima correspondem às constantes `ITEMS`, `PLAN`, `UFS`, `STEPS` e `SHARE`, e os ajustes das respostas estão na função `estimateUsage`.
+O código inteiro está nesse arquivo. As tabelas acima correspondem às constantes `ITEMS`, `PLAN`, `REGIONS`, `STEPS` e `SHARE`. Os ajustes das respostas estão na função `estimateUse`, e o primeiro palpite de quem pagou, na `splitUse`.
+
+O programa `dados/planos_ans.py` refaz as mensalidades de plano a partir dos dados abertos da ANS.
 
 ## Como ajudar
 
-A ajuda mais valiosa é **trocar um chute por um dado**: se você conhece uma fonte pública para um preço ou para uma média de uso, abra uma issue ou um pull request com o link.
+A ajuda mais valiosa é **trocar uma estimativa por um dado**. Os cinco preços sem pesquisa pública são o ponto mais fraco: se você conhece um levantamento do preço particular de consulta, pronto-socorro, raio-x, tomografia ou dentista, abra uma issue ou um pull request com o link.
 
-Bons pontos de partida seriam os dados de preços de planos da ANS, a tabela de preços máximos de medicamentos da CMED e pesquisas de uso de serviços de saúde como a PNS, do IBGE.
+Também ajuda muito conferir [FONTES.md](FONTES.md) e apontar qualquer número que não bata com a sua fonte.
 
 ## Licença
 

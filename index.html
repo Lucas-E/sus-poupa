@@ -104,7 +104,10 @@
   .chip.on.bolso button { background: var(--bolso); color: #fff; }
   .noplan .chip.plano, .noplan .pile.plano { display: none; }
   .lsplit { margin-top: 8px; font-size: 0.82rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .lest { font-size: 0.78rem; color: var(--muted); }
+  .lest:not(:empty) { margin-top: 6px; }
   #more { margin-top: 14px; }
+  #cost_line { margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--line); }
   .bar3 { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: var(--line); margin: 10px 0 14px; }
   .bar3 i { display: block; height: 100%; }
   .bar3 .sus { background: var(--sus); } .bar3 .plano { background: var(--plano); } .bar3 .bolso { background: var(--bolso); }
@@ -119,6 +122,7 @@
   details summary { cursor: pointer; font-weight: 600; }
   details .grid { margin-top: 14px; }
   footer { color: var(--muted); font-size: 0.82rem; margin-top: 20px; }
+  footer a { color: inherit; }
   #sponsor {
     display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px;
     font-size: 0.85rem; color: var(--muted);
@@ -176,6 +180,7 @@
       </div>
       <p class="hint" id="pocket_line"></p>
       <p class="hint" id="plan_line" hidden></p>
+      <p class="hint" id="cost_line"></p>
     </section>
 
     <section>
@@ -194,6 +199,7 @@
       <p class="hint">O SUS também trabalha para a sua casa de jeitos que não viram consulta nem exame. Nada disto está nos números acima.</p>
       <ul class="unseen">
         <li>O SAMU 192 de prontidão, que cobre 88% da população.</li>
+        <li>Os remédios de graça da Farmácia Popular, para pressão, diabetes, asma e outros.</li>
         <li>A vigilância sanitária, que fiscaliza comida, água, remédios e restaurantes.</li>
         <li>O controle de epidemias e as campanhas de vacinação.</li>
         <li>A grande maioria dos transplantes feitos no país.</li>
@@ -222,7 +228,7 @@
     <button class="link" id="redo">← Refazer as perguntas</button>
   </div>
 
-  <footer>Estimativa simples, sem valor oficial. As suas respostas não saem do seu aparelho. Se você aceitar, usamos cookies do Google Analytics para contar as visitas.</footer>
+  <footer>Estimativa, sem valor oficial. Este site não é do governo nem do Ministério da Saúde. Todos os números e as suas fontes estão em <a href="https://github.com/rannyeribatista/sus-poupa/blob/main/FONTES.md">fontes e método</a>. As suas respostas não saem do seu aparelho. Se você aceitar, usamos cookies do Google Analytics para contar as visitas.</footer>
 </main>
 
 <div id="consent" hidden>
@@ -231,44 +237,48 @@
 </div>
 
 <script>
+// Cada número aqui tem a sua fonte em FONTES.md.
 // plan: 'copay' = plano cobre com coparticipação · 'full' = plano cobre tudo · 'none' = plano não cobre
 // per: uso médio por ano para cada criança (c), adulto (a) e idoso (i)
+// est: preço estimado, porque não existe pesquisa pública do valor no particular
 const ITEMS = [
-  { id: 'consulta', label: 'Consultas médicas',               unit: 'por consulta', price: 200,   plan: 'copay', per: { c: 4, a: 2,   i: 5 } },
-  { id: 'lab',      label: 'Pedidos de exame de laboratório', unit: 'por pedido',   price: 150,   plan: 'copay', per: { c: 1, a: 1,   i: 3 } },
-  { id: 'imagem',   label: 'Raio-x ou ultrassom',             unit: 'por exame',    price: 150,   plan: 'copay', per: { c: 0, a: 0.5, i: 1 } },
-  { id: 'tomo',     label: 'Tomografia ou ressonância',       unit: 'por exame',    price: 800,   plan: 'copay', per: { c: 0, a: 0,   i: 0 } },
-  { id: 'ps',       label: 'Idas ao pronto-socorro ou UPA',   unit: 'por ida',      price: 400,   plan: 'copay', per: { c: 1, a: 0.5, i: 1 } },
-  { id: 'vacina',   label: 'Doses de vacina',                 unit: 'por dose',     price: 250,   plan: 'none',  per: { c: 2, a: 1,   i: 2 } },
-  { id: 'remedio',  label: 'Remédios de uso contínuo',        unit: 'por remédio, por mês', price: 60, plan: 'none', times: 12, per: { c: 0, a: 0, i: 2 } },
-  { id: 'dentista', label: 'Consultas no dentista',           unit: 'por consulta', price: 200,   plan: 'none',  per: { c: 1, a: 1,   i: 1 } },
-  { id: 'diaria',   label: 'Dias de internação',              unit: 'por dia',      price: 2500,  plan: 'full',  per: { c: 0, a: 0,   i: 0 } },
-  { id: 'cirurgia', label: 'Cirurgias',                       unit: 'por cirurgia', price: 15000, plan: 'full',  per: { c: 0, a: 0,   i: 0 } },
-  { id: 'parto',    label: 'Partos',                          unit: 'por parto',    price: 12000, plan: 'full',  per: { c: 0, a: 0,   i: 0 } },
+  { id: 'consulta', label: 'Consultas médicas',               unit: 'por consulta', price: 200,   plan: 'copay', est: true, per: { c: 4, a: 2, i: 5 } },
+  { id: 'lab',      label: 'Pedidos de exame de laboratório', unit: 'por pedido',   price: 90,    plan: 'copay', per: { c: 1, a: 1, i: 3 } },
+  { id: 'imagem',   label: 'Raio-x ou ultrassom',             unit: 'por exame',    price: 150,   plan: 'copay', est: true, per: { c: 0, a: 0.5, i: 1 } },
+  { id: 'tomo',     label: 'Tomografia ou ressonância',       unit: 'por exame',    price: 800,   plan: 'copay', est: true, per: { c: 0, a: 0, i: 0 } },
+  { id: 'ps',       label: 'Idas ao pronto-socorro ou UPA',   unit: 'por ida',      price: 400,   plan: 'copay', est: true, per: { c: 1, a: 1, i: 1 } },
+  { id: 'vacina_c', label: 'Doses de vacina de criança',      unit: 'por dose',     price: 350,   plan: 'none',  per: { c: 0.6, a: 0, i: 0 } },
+  { id: 'vacina_a', label: 'Doses de vacina de adulto ou idoso', unit: 'por dose',  price: 85,    plan: 'none',  per: { c: 0, a: 0.1, i: 3 } },
+  { id: 'remedio',  label: 'Remédios de uso contínuo',        unit: 'por remédio, por mês', price: 25, plan: 'none', times: 12, per: { c: 0, a: 0, i: 2 } },
+  { id: 'dentista', label: 'Consultas no dentista',           unit: 'por consulta', price: 200,   plan: 'none',  est: true, per: { c: 1, a: 1, i: 1 } },
+  { id: 'diaria',   label: 'Dias de internação sem cirurgia', unit: 'por dia',      price: 2500,  plan: 'full',  per: { c: 0, a: 0, i: 0 } },
+  { id: 'cirurgia', label: 'Cirurgias',                       unit: 'por cirurgia, já com a internação', price: 15000, plan: 'full', per: { c: 0, a: 0, i: 0 } },
+  { id: 'parto',    label: 'Partos',                          unit: 'por parto, com hospital e médicos', price: 20000, plan: 'full', per: { c: 0, a: 0, i: 0 } },
 ];
 const PLAN = [
-  { id: 'plan_c', label: 'Plano de saúde, criança (por mês)', price: 250 },
-  { id: 'plan_a', label: 'Plano de saúde, adulto (por mês)',  price: 550 },
-  { id: 'plan_i', label: 'Plano de saúde, idoso (por mês)',   price: 1400 },
+  { id: 'plan_c', label: 'Plano de saúde, criança (por mês)', price: 370 },
+  { id: 'plan_a', label: 'Plano de saúde, adulto (por mês)',  price: 800 },
+  { id: 'plan_i', label: 'Plano de saúde, idoso (por mês)',   price: 2080 },
 ];
 const COPAY = 30;
+const SUS_PER_PERSON = 1879;   // gasto público com saúde por habitante em 2022 (IPEA)
 
-// estado → nível de preço (1 = média)
+// Mensalidade de referência do plano por região: criança, adulto, idoso (ANS, junho de 2026)
+const REGIONS = {
+  N: [435, 890, 2360], NE: [415, 900, 2310], CO: [475, 960, 2490], SE: [340, 720, 1865], S: [385, 830, 2175],
+};
 const UFS = [
-  ['AC', 'Acre', .85], ['AL', 'Alagoas', .85], ['AP', 'Amapá', .85], ['AM', 'Amazonas', .85],
-  ['BA', 'Bahia', .85], ['CE', 'Ceará', .85], ['DF', 'Distrito Federal', 1.2], ['ES', 'Espírito Santo', 1],
-  ['GO', 'Goiás', 1], ['MA', 'Maranhão', .85], ['MT', 'Mato Grosso', 1], ['MS', 'Mato Grosso do Sul', 1],
-  ['MG', 'Minas Gerais', 1], ['PA', 'Pará', .85], ['PB', 'Paraíba', .85], ['PR', 'Paraná', 1],
-  ['PE', 'Pernambuco', .85], ['PI', 'Piauí', .85], ['RJ', 'Rio de Janeiro', 1.2], ['RN', 'Rio Grande do Norte', .85],
-  ['RS', 'Rio Grande do Sul', 1], ['RO', 'Rondônia', .85], ['RR', 'Roraima', .85], ['SC', 'Santa Catarina', 1],
-  ['SP', 'São Paulo', 1.2], ['SE', 'Sergipe', .85], ['TO', 'Tocantins', .85],
+  ['AC', 'Acre', 'N'], ['AL', 'Alagoas', 'NE'], ['AP', 'Amapá', 'N'], ['AM', 'Amazonas', 'N'],
+  ['BA', 'Bahia', 'NE'], ['CE', 'Ceará', 'NE'], ['DF', 'Distrito Federal', 'CO'], ['ES', 'Espírito Santo', 'SE'],
+  ['GO', 'Goiás', 'CO'], ['MA', 'Maranhão', 'NE'], ['MT', 'Mato Grosso', 'CO'], ['MS', 'Mato Grosso do Sul', 'CO'],
+  ['MG', 'Minas Gerais', 'SE'], ['PA', 'Pará', 'N'], ['PB', 'Paraíba', 'NE'], ['PR', 'Paraná', 'S'],
+  ['PE', 'Pernambuco', 'NE'], ['PI', 'Piauí', 'NE'], ['RJ', 'Rio de Janeiro', 'SE'], ['RN', 'Rio Grande do Norte', 'NE'],
+  ['RS', 'Rio Grande do Sul', 'S'], ['RO', 'Rondônia', 'N'], ['RR', 'Roraima', 'N'], ['SC', 'Santa Catarina', 'S'],
+  ['SP', 'São Paulo', 'SE'], ['SE', 'Sergipe', 'NE'], ['TO', 'Tocantins', 'N'],
 ];
-const INTERIOR = 0.9;
 
 const STEPS = [
   { id: 'uf',       type: 'uf',   q: 'Em que estado você mora?' },
-  { id: 'capital',  type: 'choice', q: 'Em que parte do estado você mora?',
-    options: [['Capital ou região metropolitana', 'capital'], ['Interior', 'interior']] },
   { id: 'casa',     type: 'casa', q: 'Quem mora na sua casa?' },
   { id: 'plano',    type: 'choice', q: 'Alguém da casa tem plano de saúde?',
     options: [['Ninguém', 'ninguem'], ['Parte da casa', 'parte'], ['Todos', 'todos']] },
@@ -387,8 +397,11 @@ function rebalance(it, edited) {
     if (rest <= 0) { set('plano', 0); set('bolso', 0); }
     else if (!others) set(otherPayer(it), rest);
     else { const plano = Math.round(get('plano') * rest / others * 10) / 10; set('plano', plano); set('bolso', rest - plano); }
-  } else {                             // mudou plano ou bolso: sai do SUS
-    set('sus', total - get('plano') - get('bolso'));
+  } else {                             // mudou plano ou bolso: sai do SUS e, se não bastar, do outro pagador
+    const other = edited === 'plano' ? 'bolso' : 'plano';
+    const left = Math.round((total - get(edited)) * 10) / 10;
+    set(other, Math.max(0, Math.min(get(other), left)));
+    set('sus', Math.max(0, left - get(other)));
   }
   // se os pagadores passaram do total, a casa usou mais do que o estimado: o total cresce
   $('t_' + it.id).value = fmtQty(Math.max(total, get('sus') + get('plano') + get('bolso')));
@@ -420,6 +433,7 @@ function ledgerRow(it) {
     el('div', { className: 'lprice' }, [total, el('span', { textContent: '× R$' }), price, el('span', { textContent: it.unit })]),
     el('div', { className: 'chips' }, chips),
     el('div', { className: 'lsplit', id: 's_' + it.id }),
+    el('div', { className: 'lest', textContent: it.est ? 'Preço estimado: não existe pesquisa pública deste valor. Troque pelo que você conhece.' : '' }),
   ]);
 }
 
@@ -505,16 +519,16 @@ function estimateUse() {
 
   if (!s.checkup)  { q.consulta *= 0.6; q.lab *= 0.5; q.imagem *= 0.5; }       // abaixo da média
   if (s.cronico)   { q.consulta *= 1.6; q.lab *= 2; q.remedio += 2; }           // acima da média
-  if (s.c > 0 && s.bebe) { q.consulta += 6; q.vacina += 8; }
+  if (s.c > 0 && s.bebe) { q.consulta += 4.5; q.vacina_c += 12; }
   if (s.ps)        { q.ps = Math.max(q.ps * 2.5, 3); }
-  if (s.gravidez === 'gravida' || s.gravidez === 'nasceu') { q.consulta += 8; q.imagem += 4; q.lab += 3; }
-  if (!s.vacinas)  { q.vacina *= 0.3; }
+  if (s.gravidez === 'gravida' || s.gravidez === 'nasceu') { q.consulta += 7; q.imagem += 1; q.lab += 3; }
+  if (!s.vacinas)  { q.vacina_c *= 0.3; q.vacina_a *= 0.3; }
   if (!s.dentista) { q.dentista = 0; }
 
   q.tomo = s.tomo ? 1 : 0;
   q.parto = s.gravidez === 'nasceu' ? 1 : 0;
   q.cirurgia = s.hospital === 'cirurgia' ? 1 : 0;
-  q.diaria = (q.parto ? 2 : 0) + (s.hospital === 'internacao' || s.hospital === 'cirurgia' ? 3 : 0);
+  q.diaria = s.hospital === 'internacao' ? 6 : 0;   // parto e cirurgia já trazem a internação no preço
   return q;
 }
 
@@ -529,11 +543,11 @@ function splitUse(q) {
   // a parte de cada item que veio do SUS
   const sus = {};
   ITEMS.forEach(it => { sus[it.id] = q[it.id] * share; });            // uso do dia a dia
-  sus.vacina = s.origem === 'nada' ? 0 : q.vacina;                     // vacina vem do SUS mesmo para quem tem plano
+  ['vacina_c', 'vacina_a'].forEach(id => { sus[id] = s.origem === 'nada' ? 0 : q[id]; });   // vacina vem do SUS mesmo para quem tem plano
   sus.tomo = viaSus(s.tomo_sus) ? q.tomo : 0;                          // eventos caros nunca são divididos
   sus.parto = partoSus ? q.parto : 0;
   sus.cirurgia = hospitalSus ? q.cirurgia : 0;
-  sus.diaria = (q.parto && partoSus ? 2 : 0) + (q.diaria - (q.parto ? 2 : 0)) * (hospitalSus ? 1 : 0);
+  sus.diaria = hospitalSus ? q.diaria : 0;
 
   // o resto vai para o plano, se a casa tem um e ele cobre aquilo; senão, para o bolso
   const out = {};
@@ -547,23 +561,18 @@ function splitUse(q) {
   return out;
 }
 
-function priceFactor() {
-  const uf = UFS.find(u => u[0] === state.uf);
-  return (uf ? uf[2] : 1) * (state.capital === 'capital' ? 1 : INTERIOR);
-}
-
 function finish() {
   const split = splitUse(estimateUse());
-  const f = priceFactor();
-  const round5 = v => Math.max(5, Math.round(v * f / 5) * 5);
+  const uf = UFS.find(u => u[0] === state.uf);
+  const planPrices = uf ? REGIONS[uf[2]] : PLAN.map(p => p.price);
   ITEMS.forEach(it => {
     PAYERS.forEach(([k]) => { $(qid(it, k)).value = fmtQty(split[it.id][k]); });
-    setVal('p_' + it.id, round5(it.price));
+    setVal('p_' + it.id, it.price);
     const used = split[it.id].sus + split[it.id].plano + split[it.id].bolso > 0;
     $('t_' + it.id).value = fmtQty(split[it.id].sus + split[it.id].plano + split[it.id].bolso);
     (used ? $('ledger') : $('ledger_more')).appendChild($('r_' + it.id));   // o que a casa não usou fica guardado em "o que faltou"
   });
-  PLAN.forEach(p => setVal('p_' + p.id, round5(p.price)));
+  PLAN.forEach((p, n) => setVal('p_' + p.id, planPrices[n]));
   $('more').hidden = !$('ledger_more').children.length;
   $('more').open = !$('ledger').children.length;
 
@@ -571,10 +580,7 @@ function finish() {
   $('premium_box').hidden = !hasPlan();
   setVal('paid_plan', state.plano === 'todos' ? premiums() : 0);
 
-  const uf = UFS.find(u => u[0] === state.uf);
-  $('table_hint').textContent = 'Cada linha é um tipo de cuidado que a casa teve no ano, a preços médios do particular em ' +
-    (uf ? uf[1] : 'sua região') + (state.capital === 'capital' ? ' (capital ou região metropolitana)' : ' (interior)') +
-    '. Toque em ' + (hasPlan() ? 'SUS, Plano ou Paguei' : 'SUS ou Paguei') + ' para dizer quem pagou a linha inteira, ou digite quantas você pagou e o resto se ajusta sozinho. Meio (0,5) quer dizer uma vez a cada dois anos.';
+  $('table_hint').textContent = 'Cada linha é um tipo de cuidado que a casa teve no ano, a preço de particular. Toque em ' + (hasPlan() ? 'SUS, Plano ou Paguei' : 'SUS ou Paguei') + ' para dizer quem pagou a linha inteira, ou digite quantas você pagou e o resto se ajusta sozinho. Meio (0,5) quer dizer uma vez a cada dois anos.';
 
   $('quiz').hidden = true;
   $('results').hidden = false;
@@ -631,6 +637,12 @@ function calc() {
     ? 'Do bolso da casa não saiu nada.'
     : 'Do bolso da casa saíram ' + brl.format(sum.bolso + fee) +
       (fee ? ': ' + brl.format(sum.bolso) + ' no particular e ' + brl.format(fee) + ' de mensalidade do plano.' : ', tudo no particular.');
+
+  // O SUS não é de graça: mostra quanto ele custa, sem misturar com os outros números.
+  const people = state.c + state.a + state.i;
+  $('cost_line').textContent = 'E quanto o SUS custa? O gasto público com saúde no Brasil foi de ' + brl.format(SUS_PER_PERSON) +
+    ' por pessoa em 2022. Para uma casa de ' + people + (people === 1 ? ' pessoa' : ' pessoas') + ', isso dá cerca de ' + brl.format(SUS_PER_PERSON * people) +
+    ' por ano. É a média do país, paga por todos nos impostos, e não o que a sua casa pagou.';
 
   // Só faz sentido comparar com plano para quem não tem um.
   $('plan_line').hidden = !(state.plano === 'ninguem' && sum.sus > 0);
