@@ -8,7 +8,7 @@ Você responde umas doze perguntas simples, e ela mostra a conta: o que você us
 
 É uma página só, sem servidor e sem cadastro. As suas respostas não saem do seu aparelho.
 
-A página conta visitas com o GoatCounter, que não usa cookies. Se você aceitar o aviso de cookies, ela também carrega o Google Analytics. Nenhum dos dois recebe o que você respondeu.
+Se você aceitar o aviso de cookies, a página carrega o Google Analytics para contar as visitas. Ele não recebe o que você respondeu.
 
 > **É uma estimativa, não um dado oficial.** Os preços e as médias de uso que vêm preenchidos são aproximações do autor e ainda não foram conferidos com fontes públicas. Todos podem ser trocados na própria página, e correções são muito bem-vindas (veja [Como ajudar](#como-ajudar)).
 

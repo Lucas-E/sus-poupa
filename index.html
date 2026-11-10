@@ -175,7 +175,7 @@
     <button class="link" id="redo">← Refazer as perguntas</button>
   </div>
 
-  <footer>Estimativa simples, sem valor oficial. As suas respostas não saem do seu aparelho. Contamos as visitas e, se você aceitar, usamos cookies do Google Analytics. <span id="visits"></span></footer>
+  <footer>Estimativa simples, sem valor oficial. As suas respostas não saem do seu aparelho. Se você aceitar, usamos cookies do Google Analytics para contar as visitas.</footer>
 </main>
 
 <div id="consent" hidden>
@@ -458,7 +458,7 @@ function calc() {
     : 'é quanto o SUS poupou à sua casa em um ano, dependendo de como você pagaria sem ele.';
 }
 
-/* ---------- patrocínio, Pix e contador de visitas ---------- */
+/* ---------- patrocínio, Pix e Google Analytics ---------- */
 
 // Cada bloco só aparece quando o seu valor está preenchido aqui.
 const CONFIG = {
@@ -468,7 +468,6 @@ const CONFIG = {
   pixName: '',          // nome do recebedor (até 25 letras)
   pixCity: '',          // cidade do recebedor (até 15 letras)
   pixAmounts: [5, 10, 20],
-  goatcounter: 'suspoupa',   // código da conta no GoatCounter (contador sem cookies)
   ga: 'G-J4ZPSZ2BNR',        // Google Analytics (só carrega se a pessoa aceitar os cookies)
 };
 if (new URLSearchParams(location.search).has('preview')) {   // ?preview mostra os blocos com dados de exemplo
@@ -503,7 +502,6 @@ const counted = new Set();
 function countEvent(name, params) {
   if (counted.has(name)) return;
   counted.add(name);
-  if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: name, title: name, event: true });
   gtag('event', name, params || {});
 }
 
@@ -535,7 +533,6 @@ function setupExtras() {
   const s = $('sponsor');
   if (CONFIG.sponsor) {
     const a = el('a', { href: CONFIG.sponsor.url, textContent: CONFIG.sponsor.name, target: '_blank', rel: 'noopener sponsored' });
-    a.dataset.goatcounterClick = 'patrocinador: ' + CONFIG.sponsor.name;   // conta os cliques no link
     a.addEventListener('click', () => gtag('event', 'clique_patrocinador', { patrocinador: CONFIG.sponsor.name }));
     s.append('Patrocinado por ', a);
     s.hidden = false;
@@ -564,17 +561,6 @@ function setupExtras() {
     });
     $('pix_code').onfocus = () => $('pix_code').select();
     $('pix').hidden = false;
-  }
-
-  if (CONFIG.goatcounter) {
-    const base = 'https://' + CONFIG.goatcounter + '.goatcounter.com';
-    const tag = el('script', { async: true, src: 'https://gc.zgo.at/count.js' });
-    tag.dataset.goatcounter = base + '/count';
-    document.head.appendChild(tag);
-    fetch(base + '/counter/TOTAL.json')
-      .then(r => r.json())
-      .then(d => { $('visits').textContent = d.count + ' visitas até agora.'; })
-      .catch(() => {});
   }
 }
 
