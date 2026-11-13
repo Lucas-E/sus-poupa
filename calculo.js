@@ -37,6 +37,10 @@
   ];
   const COPAY = 30;
   const SUS_PER_PERSON = 1879;   // gasto público com saúde por habitante em 2022 (IPEA)
+  // Cuidado para todos: vigilância sanitária, epidemiológica e de zoonoses, por habitante,
+  // sem a compra de vacinas (as doses que a casa tomou já estão no extrato). Ver FONTES.md.
+  const COLLECTIVE_PER_PERSON = 48;
+  const COLLECTIVE_YEAR = 2022;
 
   // Mensalidade de referência do plano por região: criança, adulto, idoso (ANS, junho de 2026)
   const REGIONS = {
@@ -165,6 +169,8 @@
       showWithPlan: s.plano === 'ninguem' && sum.sus > 0,
       // quanto o SUS custa: a média do país, à parte, nunca subtraída
       people: n, susCost: SUS_PER_PERSON * n,
+      // o que o SUS gasta com a saúde de todo mundo ao mesmo tempo: à parte, não é cuidado que a casa recebeu
+      collective: COLLECTIVE_PER_PERSON * n,
     };
   }
 
@@ -177,7 +183,7 @@
   }
 
   return {
-    ITEMS, PLAN, COPAY, SUS_PER_PERSON, REGIONS, UFS, SHARE, PAYERS,
+    ITEMS, PLAN, COPAY, SUS_PER_PERSON, COLLECTIVE_PER_PERSON, COLLECTIVE_YEAR, REGIONS, UFS, SHARE, PAYERS,
     mixed, hasPlan, otherPayer, r1, people,
     estimateUse, splitUse, defaultPrices, premiums, totals, extrato,
   };
@@ -206,5 +212,6 @@ if (typeof require !== 'undefined' && typeof module !== 'undefined' && require.m
   console.log('  A casa pagou           ' + brl(result.bolso));
   console.log('  Saiu do bolso da casa  ' + brl(result.pocket) + (result.fee ? ' (com ' + brl(result.fee) + ' de mensalidade)' : ''));
   if (result.showWithPlan) console.log('  Com um plano para todos, o que veio do SUS sairia por ' + brl(result.withPlan));
+  console.log('  Cuidado para todos (vigilância, zoonoses), à parte: ' + brl(result.collective));
   console.log('  Quanto o SUS custa para ' + result.people + ' pessoa(s): ' + brl(result.susCost) + ' (média do país, à parte)');
 }

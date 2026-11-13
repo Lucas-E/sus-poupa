@@ -195,13 +195,16 @@
     </section>
 
     <section>
+      <h2>Cuidado para todos</h2>
+      <p class="hint" id="collective_line"></p>
+    </section>
+
+    <section>
       <h2>O que não aparece na conta</h2>
       <p class="hint">O SUS também trabalha para a sua casa de jeitos que não viram consulta nem exame. Nada disto está nos números acima.</p>
       <ul class="unseen">
         <li>O SAMU 192 de prontidão, que cobre 88% da população, mesmo nos anos em que ninguém da casa precisa chamar.</li>
         <li>Os remédios de graça da Farmácia Popular, para pressão, diabetes, asma e outros.</li>
-        <li>A vigilância sanitária, que fiscaliza comida, água, remédios e restaurantes.</li>
-        <li>O controle de epidemias e as campanhas de vacinação.</li>
         <li>A grande maioria dos transplantes feitos no país.</li>
         <li>Tratamentos de alto custo, como câncer e hemodiálise, se um dia a casa precisar.</li>
       </ul>
@@ -564,6 +567,13 @@ function calc() {
   $('cost_line').textContent = 'E quanto o SUS custa? O gasto público com saúde no Brasil foi de ' + brl.format(Calculo.SUS_PER_PERSON) +
     ' por pessoa em 2022. Para uma casa de ' + r.people + (r.people === 1 ? ' pessoa' : ' pessoas') + ', isso dá cerca de ' + brl.format(r.susCost) +
     ' por ano. É a média do país, paga por todos nos impostos, e não o que a sua casa pagou.';
+
+  // Cuidado para todos: o que o SUS faz pela saúde de todo mundo ao mesmo tempo, à parte do extrato.
+  $('collective_line').textContent = 'Além do que a casa recebeu, o SUS cuida de todo mundo ao mesmo tempo: fiscaliza a água, a comida, os remédios e os restaurantes, ' +
+    'combate o mosquito da dengue e a raiva, acompanha surtos e organiza as campanhas de vacinação. O gasto público com isso foi de cerca de ' +
+    brl.format(Calculo.COLLECTIVE_PER_PERSON) + ' por pessoa em ' + Calculo.COLLECTIVE_YEAR + ', ou ' + brl.format(r.collective) + ' para ' +
+    (r.people === 1 ? 'uma pessoa' : 'as ' + r.people + ' pessoas da casa') + '. É cuidado para todos, não cuidado que a casa recebeu, por isso não entra no extrato. ' +
+    'As vacinas que a casa tomou já estão no extrato, dose por dose, e a compra de vacinas foi tirada deste número.';
 
   // Só faz sentido comparar com plano para quem não tem um.
   $('plan_line').hidden = !r.showWithPlan;

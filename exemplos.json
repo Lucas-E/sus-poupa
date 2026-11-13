@@ -8,6 +8,7 @@
       "bolso": 0,
       "pocket": 0,
       "withPlan": 11228,
+      "collective": 48,
       "susCost": 1879
     }
   },
@@ -19,6 +20,7 @@
       "plano": 2240,
       "bolso": 300,
       "pocket": 17580,
+      "collective": 96,
       "susCost": 3758
     }
   },
@@ -30,6 +32,7 @@
       "plano": 0,
       "bolso": 1174,
       "pocket": 1174,
+      "collective": 48,
       "susCost": 1879
     }
   },
@@ -42,6 +45,7 @@
       "bolso": 0,
       "pocket": 0,
       "withPlan": 33329,
+      "collective": 144,
       "susCost": 5637
     }
   },
@@ -54,6 +58,7 @@
       "bolso": 1795,
       "pocket": 1795,
       "withPlan": 56011,
+      "collective": 96,
       "susCost": 3758
     }
   },
@@ -65,6 +70,7 @@
       "plano": 19490,
       "bolso": 1100,
       "pocket": 1100,
+      "collective": 240,
       "susCost": 9395
     }
   }

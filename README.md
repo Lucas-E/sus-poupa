@@ -32,7 +32,9 @@ Três casas, para ver a diferença:
 
 A calculadora preenche o extrato a partir das perguntas, e a pessoa corrige: um toque em SUS, Plano ou Paguei manda a linha inteira para aquele pagador, e as quantidades podem ser divididas (oito consultas, cinco pelo SUS e três pagas). Cada linha tem um total fixo: marcar três consultas como pagas tira três do SUS, e a soma continua a mesma. O total e o preço de cada linha também podem ser trocados ali mesmo.
 
-Abaixo do extrato, a página lista o que o SUS faz e que não vira consulta nem exame: o SAMU de prontidão (as chamadas que a casa fez estão no extrato), vigilância sanitária, controle de epidemias, transplantes, tratamentos de alto custo. Isso não tem preço na conta e não entra em nenhum número.
+Abaixo do extrato vem o cuidado para todos: o que o SUS gasta com vigilância sanitária, vigilância de epidemias e zoonoses e a organização das campanhas de vacinação, por pessoa, vezes o tamanho da casa. É um número à parte, porque é cuidado com todo mundo ao mesmo tempo, não cuidado que a casa recebeu, e não entra no extrato.
+
+Depois, a página lista o que o SUS faz e ainda não tem preço na conta: o SAMU de prontidão (as chamadas que a casa fez estão no extrato), a Farmácia Popular, transplantes, tratamentos de alto custo. Isso não entra em nenhum número.
 
 O SUS não é de graça, e a página diz quanto ele custa: o gasto público com saúde por pessoa, vezes o número de pessoas da casa. É um número à parte, a média do país, e não entra em nenhuma das contas acima.
 
@@ -144,7 +146,13 @@ Para a casa em que ninguém tem plano, a página mostra mais uma linha: quanto o
 
 A isso se somam 12 mensalidades por pessoa. Essa linha responde a outra pergunta (quanto custa estar coberto, usando ou não), então ela fica separada e não entra no número principal.
 
-### 6. Quanto o SUS custa
+### 6. Cuidado para todos
+
+O gasto público com vigilância sanitária e epidemiológica, somando União, estados e municípios, foi de cerca de R$ 48 por pessoa em 2022. A página mostra esse valor vezes o número de pessoas da casa, à parte do extrato.
+
+A compra de vacinas foi tirada desse número, porque cada dose que a casa tomou já é uma linha do extrato. Sem isso, a mesma vacina seria contada duas vezes. A conta completa está em [FONTES.md](FONTES.md).
+
+### 7. Quanto o SUS custa
 
 O gasto público com saúde no Brasil, somando União, estados e municípios, foi de R$ 1.879 por pessoa em 2022 (IPEA). A página mostra esse valor vezes o número de pessoas da casa.
 
@@ -157,7 +165,7 @@ O gasto público com saúde no Brasil, somando União, estados e municípios, fo
 - **Qualidade e espera.** Uma consulta no SUS e uma particular não são o mesmo produto. A conta compara preço, não experiência.
 - **Carências e reajustes** dos planos, e as diferenças entre tipos de plano.
 - **Tratamentos de alto custo** (câncer, hemodiálise, transplante, remédios caros). Nesses casos o valor poupado é muito maior do que qualquer número que a calculadora mostra.
-- **O que o SUS faz por todo mundo ao mesmo tempo:** vigilância sanitária, o SAMU de prontidão, campanhas de vacinação, controle de epidemias.
+- **O que o SUS faz por todo mundo ao mesmo tempo** entra só como o bloco à parte do cuidado para todos, e o SAMU de prontidão não entra em número nenhum.
 
 Os dois últimos itens puxam o número para baixo; o primeiro pode puxar para qualquer lado.
 

@@ -11,7 +11,7 @@ const exemplos = require('./exemplos.json');
 const brl = n => 'R$ ' + Math.round(n).toLocaleString('pt-BR');
 const CAMPOS = [
   ['sus', 'O SUS pagou'], ['plano', 'O plano pagou'], ['bolso', 'A casa pagou no particular'],
-  ['pocket', 'Saiu do bolso da casa'], ['withPlan', 'Com um plano para todos'], ['susCost', 'Quanto o SUS custa'],
+  ['pocket', 'Saiu do bolso da casa'], ['withPlan', 'Com um plano para todos'], ['collective', 'Cuidado para todos'], ['susCost', 'Quanto o SUS custa'],
 ];
 
 let falhas = 0;

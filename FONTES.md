@@ -97,9 +97,28 @@ Para contexto: 53,1 milhões de pessoas têm plano médico, 24,9% da população
 - Total de 2023: R$ 454 bilhões, o maior da série [29]. Ainda não há total consolidado de 2024 ou 2025.
 - A página mostra R$ 1.879 vezes o número de pessoas da casa, como um número à parte, dizendo que é a média do país e não o imposto que aquela casa pagou.
 
-## 6. O que não aparece na conta
+## 6. Cuidado para todos
 
-A página lista, sem valor, o que o SUS faz e não vira consulta nem exame: o SAMU 192 de prontidão, que cobre 88% da população [31] (as chamadas que a casa fez entram no extrato, cada uma com o seu preço); a Farmácia Popular [13]; a vigilância sanitária; o controle de epidemias; os transplantes, dos quais o SUS financia cerca de 86% [32]; e os tratamentos de alto custo.
+O que o SUS faz pela saúde de todo mundo ao mesmo tempo: vigilância sanitária (água, comida, remédios, restaurantes), vigilância epidemiológica (surtos, epidemias, dengue, zoonoses) e a organização das campanhas de vacinação. A página mostra esse gasto por pessoa vezes o número de pessoas da casa, num bloco à parte, dizendo que é cuidado para todos e não cuidado que a casa recebeu. Não entra no extrato nem em nenhum dos três montes.
+
+| Número | Valor usado | De onde vem | Solidez |
+|---|---|---|---|
+| Gasto público com vigilância, por pessoa | R$ 48 (2022) | Despesa empenhada nas subfunções 304 (vigilância sanitária) e 305 (vigilância epidemiológica), somando União, estados e municípios [36], menos a compra de vacinas e menos o dinheiro que a União repassa a estados e municípios [37], dividido pela população do Censo 2022 [38] | média |
+
+A conta, em milhões de reais de 2022:
+
+- **União:** R$ 20.666,0 nas subfunções 304 e 305 [36]. Saem R$ 3.554,4 repassados a estados e municípios, que eles gastam de novo e já aparecem nas contas deles, e R$ 16.791,0 da compra de vacinas (ação 20YE, que fica na subfunção 305 [37][39]). Sobram **R$ 320,6**.
+- **Estados e Distrito Federal:** **R$ 1.759,8** (os 27 declararam) [36].
+- **Municípios:** **R$ 7.603,2** (5.559 de 5.570 declararam; os 11 que faltam somam 3,08 milhões de pessoas e ficaram de fora) [36].
+- **Total:** R$ 9.683,6 milhões ÷ 203.080.756 pessoas = **R$ 47,68 por pessoa**, arredondado para R$ 48.
+
+**Por que tirar as vacinas.** O extrato já tem uma linha para cada dose de vacina que a casa tomou, a preço de particular. Em 2022, 83% do gasto da União com vigilância epidemiológica foi a compra de vacinas, muitas delas de covid. Se esse dinheiro ficasse aqui, a mesma dose seria contada duas vezes: uma na linha da vacina e outra no cuidado para todos. Então a compra sai deste número, e fica só o trabalho em volta dela (campanhas, rede de frio, vigilância das doenças).
+
+**Por que média e não forte.** Os dados são oficiais, mas a soma e o desconto dos repasses são conta nossa. O desconto é aproximado, porque estados e municípios podem lançar o dinheiro recebido em outras subfunções. Muitas cidades também lançam vigilância como atenção básica (301) ou administração (122), e o custo de pessoal da Anvisa não entra na 304. Por isso o número tende a ser um piso. 2022 ainda tem gasto de covid com testes e vigilância nas cidades.
+
+## 7. O que não aparece na conta
+
+A página lista, sem valor, o que o SUS faz e não vira consulta nem exame: o SAMU 192 de prontidão, que cobre 88% da população [31] (as chamadas que a casa fez entram no extrato, cada uma com o seu preço); a Farmácia Popular [13]; os transplantes, dos quais o SUS financia cerca de 86% [32]; e os tratamentos de alto custo.
 
 ## Fontes
 
@@ -138,3 +157,7 @@ A página lista, sem valor, o que o SUS faz e não vira consulta nem exame: o SA
 33. Ambulância Particular (Brasil Emergências Médicas), Curitiba, "Quanto custa chamar uma ambulância", abril de 2025. https://ambulanciaparticular.com.br/quanto-custa-chamar-uma-ambulancia/
 34. SIS/Senado, tabela de remoção, reajuste de agosto de 2025 (códigos 56030102 e 56030101). https://www12.senado.leg.br/institucional/sis/pdfs/tabsenado-remocao-reajuste-agosto-2025-1.pdf
 35. ANS, Resolução Normativa 465/2021 (rol de procedimentos), artigo 18, VII. https://cbr.org.br/wp-content/uploads/2023/08/RN-ANS-de-2021-no-465_Atualiza-Rol-de-Procedimentos.pdf
+36. Tesouro Nacional, SICONFI, Declaração de Contas Anuais 2022, Anexo I-E (despesa por função e subfunção), da União, de cada estado e de cada município. Exemplo, a União: https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca?an_exercicio=2022&no_anexo=DCA-Anexo%20I-E&id_ente=1
+37. Portal da Transparência, despesas do orçamento de 2022, por ação e elemento (arquivo aberto para baixar). https://portaldatransparencia.gov.br/download-de-dados/orcamento-despesa/2022
+38. IBGE, Censo 2022, população residente (tabela 4709). https://apisidra.ibge.gov.br/values/t/4709/n1/all/v/93/p/2022
+39. Lei 14.347/2022 (Lei Orçamentária de 2022): ação 20YE, aquisição e distribuição de imunobiológicos, na subfunção 305. https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2022/lei/L14347.htm
