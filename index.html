@@ -717,7 +717,7 @@ const CONFIG = {
   pixName: '',          // nome do recebedor (até 25 letras)
   pixCity: '',          // cidade do recebedor (até 15 letras)
   pixAmounts: [5, 10, 20],
-  ga: 'G-J4ZPSZ2BNR',        // Google Analytics (só carrega se a pessoa aceitar os cookies)
+  gtm: 'GTM-PRQNVGD5',       // Google Tag Manager, que carrega o Google Analytics (só se a pessoa aceitar os cookies)
 };
 if (new URLSearchParams(location.search).has('preview')) {   // ?preview mostra os blocos com dados de exemplo
   Object.assign(CONFIG, {
@@ -754,16 +754,16 @@ function countEvent(name, params) {
   gtag('event', name, params || {});
 }
 
-// Google Analytics: usa cookies, então só carrega depois do "Aceitar".
+// Google Tag Manager (com o Google Analytics dentro): usa cookies, então só carrega depois do "Aceitar".
 window.dataLayer = window.dataLayer || [];
 function gtag() { dataLayer.push(arguments); }
 function loadGA() {
-  document.head.appendChild(el('script', { async: true, src: 'https://www.googletagmanager.com/gtag/js?id=' + CONFIG.ga }));
   gtag('js', new Date());
-  gtag('config', CONFIG.ga);
+  dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+  document.head.appendChild(el('script', { async: true, src: 'https://www.googletagmanager.com/gtm.js?id=' + CONFIG.gtm }));
 }
 function setupConsent() {
-  if (!CONFIG.ga) return;
+  if (!CONFIG.gtm) return;
   let choice = null;
   try { choice = localStorage.getItem('cookies'); } catch (e) {}
   if (choice === 'sim') return loadGA();
