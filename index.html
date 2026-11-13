@@ -229,6 +229,7 @@
     </section>
 
     <button class="link" id="redo">← Refazer as perguntas</button>
+    <p class="hint">O resultado fica guardado só neste aparelho, para você ver de novo quando voltar. Refazer as perguntas apaga o que foi guardado.</p>
   </div>
 
   <footer>Estimativa, sem valor oficial. Este site não é do governo nem do Ministério da Saúde. Todos os números e as suas fontes estão em <a href="https://github.com/rannyeribatista/sus-poupa/blob/main/FONTES.md">fontes e método</a>. As suas respostas não saem do seu aparelho. Se você aceitar, usamos cookies do Google Analytics para contar as visitas.</footer>
@@ -480,6 +481,7 @@ function advance() {
 $('next').onclick = advance;
 $('back').onclick = () => { if (idx > 0) { idx--; render(); } };
 $('redo').onclick = () => {
+  forget();
   idx = 0;
   $('results').hidden = true;
   $('quiz').hidden = false;
@@ -488,8 +490,9 @@ $('redo').onclick = () => {
 
 /* ---------- das respostas para o extrato ---------- */
 
-function finish() {
-  const { rows: split, prices, paidPlan } = Calculo.extrato(state);
+// saved: o extrato guardado neste aparelho, como a pessoa deixou. Sem ele, o extrato sai das respostas.
+function finish(saved) {
+  const { rows: split, prices, paidPlan } = saved || Calculo.extrato(state);
   ITEMS.forEach(it => {
     PAYERS.forEach(([k]) => { $(qid(it, k)).value = fmtQty(split[it.id][k]); });
     setVal('p_' + it.id, prices[it.id]);
@@ -504,6 +507,7 @@ function finish() {
   $('results').classList.toggle('noplan', !hasPlan());
   $('premium_box').hidden = !hasPlan();
   setVal('paid_plan', paidPlan);
+  if (saved) setVal('p_copay', prices.copay);
 
   $('table_hint').textContent = 'Cada linha é um tipo de cuidado que a casa teve no ano, a preço de particular. Toque em ' + (hasPlan() ? 'SUS, Plano ou Paguei' : 'SUS ou Paguei') + ' para dizer quem pagou a linha inteira, ou digite quantas você pagou e o resto se ajusta sozinho. Meio (0,5) quer dizer uma vez a cada dois anos.';
 
@@ -512,7 +516,31 @@ function finish() {
   setBar(1);
   calc();
   window.scrollTo(0, 0);
-  countEvent('resultado');
+  if (!saved) countEvent('resultado');
+}
+
+/* ---------- o resultado guardado no aparelho ---------- */
+
+// As respostas e o extrato ficam só neste navegador, para a pessoa reabrir a página e ver o resultado.
+// Se o navegador não deixar guardar, a página funciona igual, só não lembra.
+const SAVE_KEY = 'extrato';
+function save() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ v: 1, state, ...readLedger() })); } catch (e) {}
+}
+function forget() {
+  try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
+}
+function restore() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SAVE_KEY));
+    if (!saved || saved.v !== 1 || !ITEMS.every(it => saved.rows[it.id] && it.id in saved.prices)) return false;
+    Object.assign(state, saved.state);
+    idx = visible().length - 1;
+    finish(saved);
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 /* ---------- a conta ---------- */
@@ -579,6 +607,8 @@ function calc() {
   $('plan_line').hidden = !r.showWithPlan;
   $('plan_line').textContent = 'Outro jeito de olhar: com um plano de saúde para a casa toda, o que veio do SUS sairia por cerca de ' +
     brl.format(r.withPlan) + ' no ano, somando 12 mensalidades, a coparticipação e o que o plano não cobre.';
+
+  save();
 }
 
 /* ---------- patrocínio, Pix e Google Analytics ---------- */
@@ -690,7 +720,7 @@ function setupExtras() {
 $('results').addEventListener('input', calc);
 setupExtras();
 setupConsent();
-render();
+if (!restore()) render();
 </script>
 </body>
 </html>

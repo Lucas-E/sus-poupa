@@ -6,7 +6,7 @@ Uma calculadora que estima quanto a sua casa gastaria com saúde em um ano se o 
 
 Você responde de treze a dezessete perguntas simples, e ela monta o extrato de saúde da sua casa no ano: cada tipo de cuidado em uma linha, com quem pagou por ele. O SUS, o plano ou você.
 
-É uma página só, sem servidor e sem cadastro. As suas respostas não saem do seu aparelho.
+É uma página só, sem servidor e sem cadastro. As suas respostas não saem do seu aparelho. O resultado fica guardado no próprio navegador, para aparecer de novo quando você voltar, e o botão "Refazer as perguntas" apaga.
 
 Se você aceitar o aviso de cookies, a página carrega o Google Analytics para contar as visitas. Ele não recebe o que você respondeu.
 
