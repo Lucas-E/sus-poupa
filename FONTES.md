@@ -8,7 +8,7 @@ Os números entre colchetes apontam para a lista de fontes no fim. Achou um erro
 
 ## Como conferimos
 
-Cada número da coluna "O que as fontes dizem" foi lido duas vezes: uma na pesquisa e outra, depois, direto no documento de origem (o PDF, a planilha ou a página oficial), em 10 de novembro de 2026. O que não pôde ser relido na origem foi tirado da tabela.
+Cada número da coluna "O que as fontes dizem" foi lido duas vezes: uma na pesquisa e outra, depois, direto no documento de origem (o PDF, a planilha ou a página oficial), em 10 de novembro de 2026 (as fontes de número 33 em diante, em 13 de novembro). O que não pôde ser relido na origem foi tirado da tabela.
 
 Três tipos de número são conta nossa em cima do dado oficial, e não um número publicado:
 
@@ -29,6 +29,7 @@ Um preço para o país inteiro. Não encontramos fonte para diferenças de preç
 | Raio-x ou ultrassom | R$ 150 | Preço particular de raio-x não encontrado (plano paga R$ 54,50 [6]). Ultrassom particular: R$ 180–450 [9] | fraca |
 | Tomografia ou ressonância | R$ 800 | Preço particular não encontrado. Plano paga R$ 452 (tomografia) e R$ 992 (ressonância) [6] | fraca |
 | Ida ao pronto-socorro | R$ 400 | Preço particular não encontrado. Plano paga R$ 112–169 só pela consulta [5][6]; a conta do particular inclui exames, remédio e observação. É o preço menos sustentado da lista | fraca |
+| Chamada ao SAMU, com a ambulância | R$ 500 | Não existe pesquisa de preço de resgate particular. Uma empresa de Curitiba anuncia remoção básica a partir de R$ 450 (abril de 2025) [33]. O plano do Senado paga R$ 327,50 pela ambulância básica e R$ 851,09 pela UTI móvel, até 50 km [34]. O SUS não tem preço por chamada: o SAMU é pago por ambulância, por mês. O valor usado fica perto do básico, que é a maioria das saídas | fraca |
 | Dose de vacina de criança | R$ 350 | Hexavalente R$ 354; meningocócica ACWY R$ 425; pneumocócica 20 R$ 560 [10] | forte |
 | Dose de vacina de adulto ou idoso | R$ 85 | Gripe R$ 85 [10]; em BH, R$ 75–170 [8] | forte |
 | Remédio de uso contínuo (mês) | R$ 25 | Genéricos comuns custam R$ 4–38 a caixa nas farmácias de SP [12]; teto oficial de R$ 19–24 para sinvastatina, losartana e metformina genéricas [11]. A Farmácia Popular dá de graça a maioria deles [13] | forte |
@@ -56,6 +57,7 @@ Valores de referência que os planos declaram à ANS, junho de 2026, plano indiv
 |---|---|---|---|
 | Coparticipação | 30% | Não existe teto legal em vigor. 30% é a prática de mercado e o limite que a ANS propôs em 2024 e ainda não aprovou | média |
 | Internação, cirurgia e parto | cobertos, sem coparticipação | Cobrar percentual em internação é proibido [4] | forte |
+| Resgate de ambulância em casa ou na rua | fora do plano | A lei e o rol da ANS só obrigam o plano a pagar a remoção de um hospital para outro, ou depois do atendimento de urgência [3][35]. O resgate (o que o SAMU faz) não aparece em nenhum dos dois | média |
 | Vacinas, remédios de uso em casa e dentista | fora do plano | Remédio para tratamento em casa é exclusão prevista em lei [3]; dentista é outro tipo de plano; vacina não é cobertura obrigatória | forte |
 
 Para contexto: 53,1 milhões de pessoas têm plano médico, 24,9% da população (setembro de 2026) [2]. Carências máximas: 300 dias para parto, 180 dias para o resto, 24 meses para doença preexistente [3]. A calculadora não considera carências.
@@ -82,6 +84,7 @@ Para contexto: 53,1 milhões de pessoas têm plano médico, 24,9% da população
 | O bebê nasceu | +1 parto | Os dias de hospital já estão no pacote do parto. No SUS: 2,1 dias no parto normal, 2,6 na cesárea [18] | forte |
 | Cada internação sem cirurgia | +6 dias | SUS: 6,4 dias em média na internação clínica [18] | forte |
 | Cada internação com cirurgia | +1 cirurgia | Os dias já estão no pacote. No SUS: 3,2 dias em média [18] | forte |
+| Cada chamada ao SAMU | +1 chamada, sempre pelo SUS | Perguntado direto. Quem ligou para o 192 foi atendido pelo SUS | — |
 | Não vai ao médico sem estar doente | consultas × 0,6; exames × 0,5 | Nenhuma fonte. Estimativa | fraca |
 | Condição crônica | consultas × 1,6; laboratório × 2; +2 remédios | Nenhuma fonte para os multiplicadores. Estimativa | fraca |
 | Urgência mais de duas vezes | pronto-socorro × 2,5, mínimo 3 | Nenhuma fonte. Estimativa | fraca |
@@ -96,7 +99,7 @@ Para contexto: 53,1 milhões de pessoas têm plano médico, 24,9% da população
 
 ## 6. O que não aparece na conta
 
-A página lista, sem valor, o que o SUS faz e não vira consulta nem exame: o SAMU 192, que cobre 88% da população [31]; a Farmácia Popular [13]; a vigilância sanitária; o controle de epidemias; os transplantes, dos quais o SUS financia cerca de 86% [32]; e os tratamentos de alto custo.
+A página lista, sem valor, o que o SUS faz e não vira consulta nem exame: o SAMU 192 de prontidão, que cobre 88% da população [31] (as chamadas que a casa fez entram no extrato, cada uma com o seu preço); a Farmácia Popular [13]; a vigilância sanitária; o controle de epidemias; os transplantes, dos quais o SUS financia cerca de 86% [32]; e os tratamentos de alto custo.
 
 ## Fontes
 
@@ -132,3 +135,6 @@ A página lista, sem valor, o que o SUS faz e não vira consulta nem exame: o SA
 30. SB Brasil 2023, análise publicada em BMC Oral Health, 2026. https://link.springer.com/10.1186/s12903-026-09239-w
 31. Ministério da Saúde, Relatório Anual de Gestão 2024 (cobertura do SAMU 192: 88,09% da população). https://bvsms.saude.gov.br/bvs/publicacoes/relatorio_anual_gestao_2024.pdf
 32. Ministério da Saúde, via Agência Brasil, maio de 2026: o SUS financia cerca de 86% dos transplantes do país. https://www.jb.com.br/bem-viver/saude/2026/05/1059542-brasil-bate-recorde-de-transplantes-em-2025.html
+33. Ambulância Particular (Brasil Emergências Médicas), Curitiba, "Quanto custa chamar uma ambulância", abril de 2025. https://ambulanciaparticular.com.br/quanto-custa-chamar-uma-ambulancia/
+34. SIS/Senado, tabela de remoção, reajuste de agosto de 2025 (códigos 56030102 e 56030101). https://www12.senado.leg.br/institucional/sis/pdfs/tabsenado-remocao-reajuste-agosto-2025-1.pdf
+35. ANS, Resolução Normativa 465/2021 (rol de procedimentos), artigo 18, VII. https://cbr.org.br/wp-content/uploads/2023/08/RN-ANS-de-2021-no-465_Atualiza-Rol-de-Procedimentos.pdf

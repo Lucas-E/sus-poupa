@@ -4,13 +4,13 @@ Uma calculadora que estima quanto a sua casa gastaria com saúde em um ano se o 
 
 **Use agora:** https://rannyeribatista.github.io/sus-poupa/
 
-Você responde de doze a dezesseis perguntas simples, e ela monta o extrato de saúde da sua casa no ano: cada tipo de cuidado em uma linha, com quem pagou por ele. O SUS, o plano ou você.
+Você responde de treze a dezessete perguntas simples, e ela monta o extrato de saúde da sua casa no ano: cada tipo de cuidado em uma linha, com quem pagou por ele. O SUS, o plano ou você.
 
 É uma página só, sem servidor e sem cadastro. As suas respostas não saem do seu aparelho.
 
 Se você aceitar o aviso de cookies, a página carrega o Google Analytics para contar as visitas. Ele não recebe o que você respondeu.
 
-> **É uma estimativa, não um dado oficial, e este site não é do governo.** Cada número tem a sua fonte pública em [FONTES.md](FONTES.md), com o quanto dá para confiar nele. Cinco preços não têm pesquisa pública (consulta, raio-x ou ultrassom, tomografia, pronto-socorro e dentista): são estimativa, e a página avisa isso na própria linha. Tudo pode ser trocado na página, e correções são muito bem-vindas (veja [Como ajudar](#como-ajudar)).
+> **É uma estimativa, não um dado oficial, e este site não é do governo.** Cada número tem a sua fonte pública em [FONTES.md](FONTES.md), com o quanto dá para confiar nele. Seis preços não têm pesquisa pública (consulta, raio-x ou ultrassom, tomografia, pronto-socorro, chamada ao SAMU e dentista): são estimativa, e a página avisa isso na própria linha. Tudo pode ser trocado na página, e correções são muito bem-vindas (veja [Como ajudar](#como-ajudar)).
 
 ## A ideia
 
@@ -32,7 +32,7 @@ Três casas, para ver a diferença:
 
 A calculadora preenche o extrato a partir das perguntas, e a pessoa corrige: um toque em SUS, Plano ou Paguei manda a linha inteira para aquele pagador, e as quantidades podem ser divididas (oito consultas, cinco pelo SUS e três pagas). Cada linha tem um total fixo: marcar três consultas como pagas tira três do SUS, e a soma continua a mesma. O total e o preço de cada linha também podem ser trocados ali mesmo.
 
-Abaixo do extrato, a página lista o que o SUS faz e que não vira consulta nem exame: SAMU, vigilância sanitária, controle de epidemias, transplantes, tratamentos de alto custo. Isso não tem preço na conta e não entra em nenhum número.
+Abaixo do extrato, a página lista o que o SUS faz e que não vira consulta nem exame: o SAMU de prontidão (as chamadas que a casa fez estão no extrato), vigilância sanitária, controle de epidemias, transplantes, tratamentos de alto custo. Isso não tem preço na conta e não entra em nenhum número.
 
 O SUS não é de graça, e a página diz quanto ele custa: o gasto público com saúde por pessoa, vezes o número de pessoas da casa. É um número à parte, a média do país, e não entra em nenhuma das contas acima.
 
@@ -68,10 +68,11 @@ Depois, cada resposta empurra essa média para cima ou para baixo:
 | Cada internação sem cirurgia | +6 dias de internação |
 | Cada internação com cirurgia | +1 cirurgia |
 | Cada tomografia ou ressonância | +1 exame |
+| Cada chamada ao SAMU | +1 chamada |
 | Vacinas atrasadas | doses de vacina × 0,3 |
 | Não vai ao dentista todo ano | consultas no dentista = 0 |
 
-Os eventos raros e caros (parto, internação, cirurgia, tomografia) são perguntados diretamente, porque nenhuma média consegue adivinhá-los, e um só deles pesa mais do que todo o resto junto. Internações e exames caros são perguntados em quantidade ("quantas vezes?"), porque uma casa pode ter mais de um no mesmo ano.
+Os eventos raros e caros (parto, internação, cirurgia, tomografia, SAMU) são perguntados diretamente, porque nenhuma média consegue adivinhá-los, e um só deles pesa mais do que todo o resto junto. Internações, exames caros e chamadas ao SAMU são perguntados em quantidade ("quantas vezes?"), porque uma casa pode ter mais de um no mesmo ano.
 
 O parto e a cirurgia não somam dias de internação: o preço deles já é o do pacote, com as diárias dentro.
 
@@ -90,9 +91,10 @@ Duas perguntas dão o primeiro palpite de quem pagou cada linha: se alguém da c
 Essa parte vale para consultas, exames, pronto-socorro, remédios e dentista. Duas coisas fogem da regra:
 
 - **Vacinas** contam inteiras como SUS para todo mundo, menos para quem não usou o SUS. Quem tem plano também se vacina no posto.
+- **Chamadas ao SAMU** contam sempre como SUS: quem ligou para o 192 foi atendido por ele.
 - **Eventos caros** (parto, internação, cirurgia, tomografia) nunca são divididos. Quando a casa misturou SUS com plano ou particular, a calculadora pergunta de cada tipo: "foi pelo SUS?". A resposta vale para todas as internações (ou todos os exames) do ano; se uma foi pelo SUS e outra não, a pessoa divide no extrato. Se não foi, a linha vai inteira para o plano ou para o bolso.
 
-O que não veio do SUS vai para o plano, se a casa tem um e ele cobre aquilo, ou para o bolso. Vacina, remédio de uso contínuo e dentista nunca vão para o plano, porque ele não cobre.
+O que não veio do SUS vai para o plano, se a casa tem um e ele cobre aquilo, ou para o bolso. Vacina, remédio de uso contínuo, resgate de ambulância e dentista nunca vão para o plano, porque ele não cobre.
 
 As quantidades aceitam uma casa decimal: 0,5 ida ao pronto-socorro quer dizer uma ida a cada dois anos.
 
@@ -107,6 +109,7 @@ Cada tipo de cuidado tem um preço só, para o país inteiro. Não existe fonte 
 | Raio-x ou ultrassom | R$ 150 | coparticipação |
 | Tomografia ou ressonância | R$ 800 | coparticipação |
 | Ida ao pronto-socorro | R$ 400 | coparticipação |
+| Chamada ao SAMU, com a ambulância | R$ 500 | plano não cobre |
 | Dose de vacina de criança | R$ 350 | plano não cobre |
 | Dose de vacina de adulto ou idoso | R$ 85 | plano não cobre |
 | Remédio de uso contínuo (por mês) | R$ 25 | plano não cobre |
@@ -154,7 +157,7 @@ O gasto público com saúde no Brasil, somando União, estados e municípios, fo
 - **Qualidade e espera.** Uma consulta no SUS e uma particular não são o mesmo produto. A conta compara preço, não experiência.
 - **Carências e reajustes** dos planos, e as diferenças entre tipos de plano.
 - **Tratamentos de alto custo** (câncer, hemodiálise, transplante, remédios caros). Nesses casos o valor poupado é muito maior do que qualquer número que a calculadora mostra.
-- **O que o SUS faz por todo mundo ao mesmo tempo:** vigilância sanitária, SAMU, campanhas de vacinação, controle de epidemias.
+- **O que o SUS faz por todo mundo ao mesmo tempo:** vigilância sanitária, o SAMU de prontidão, campanhas de vacinação, controle de epidemias.
 
 Os dois últimos itens puxam o número para baixo; o primeiro pode puxar para qualquer lado.
 
@@ -186,7 +189,7 @@ O programa `dados/planos_ans.py` refaz as mensalidades de plano a partir dos dad
 
 ## Como ajudar
 
-A ajuda mais valiosa é **trocar uma estimativa por um dado**. Os cinco preços sem pesquisa pública são o ponto mais fraco: se você conhece um levantamento do preço particular de consulta, pronto-socorro, raio-x, tomografia ou dentista, abra uma issue ou um pull request com o link.
+A ajuda mais valiosa é **trocar uma estimativa por um dado**. Os seis preços sem pesquisa pública são o ponto mais fraco: se você conhece um levantamento do preço particular de consulta, pronto-socorro, chamada de ambulância, raio-x, tomografia ou dentista, abra uma issue ou um pull request com o link.
 
 Também ajuda muito conferir [FONTES.md](FONTES.md) e apontar qualquer número que não bata com a sua fonte.
 

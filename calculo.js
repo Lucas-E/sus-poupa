@@ -21,6 +21,7 @@
     { id: 'imagem',   label: 'Raio-x ou ultrassom',             unit: 'por exame',    price: 150,   plan: 'copay', est: true, per: { c: 0, a: 0.5, i: 1 } },
     { id: 'tomo',     label: 'Tomografia ou ressonância',       unit: 'por exame',    price: 800,   plan: 'copay', est: true, per: { c: 0, a: 0, i: 0 } },
     { id: 'ps',       label: 'Idas ao pronto-socorro ou UPA',   unit: 'por ida',      price: 400,   plan: 'copay', est: true, per: { c: 1, a: 1, i: 1 } },
+    { id: 'samu',     label: 'Chamadas ao SAMU 192',            unit: 'por chamada',  price: 500,   plan: 'none',  est: true, per: { c: 0, a: 0, i: 0 } },
     { id: 'vacina_c', label: 'Doses de vacina de criança',      unit: 'por dose',     price: 350,   plan: 'none',  per: { c: 0.6, a: 0, i: 0 } },
     { id: 'vacina_a', label: 'Doses de vacina de adulto ou idoso', unit: 'por dose',  price: 85,    plan: 'none',  per: { c: 0, a: 0.1, i: 3 } },
     { id: 'remedio',  label: 'Remédios de uso contínuo',        unit: 'por remédio, por mês', price: 25, plan: 'none', times: 12, per: { c: 0, a: 0, i: 2 } },
@@ -78,6 +79,7 @@
     if (!s.dentista) { q.dentista = 0; }
 
     q.tomo = s.n_tomo || 0;
+    q.samu = s.n_samu || 0;
     q.parto = s.gravidez === 'nasceu' ? 1 : 0;
     q.cirurgia = s.h_cir || 0;
     q.diaria = 6 * (s.h_clin || 0);   // 6 dias por internação sem cirurgia; parto e cirurgia já trazem a internação no preço
@@ -95,6 +97,7 @@
     const sus = {};
     ITEMS.forEach(it => { sus[it.id] = q[it.id] * share; });            // uso do dia a dia
     ['vacina_c', 'vacina_a'].forEach(id => { sus[id] = s.origem === 'nada' ? 0 : q[id]; });   // vacina vem do SUS mesmo para quem tem plano
+    sus.samu = q.samu;                                                   // quem ligou para o 192 foi atendido pelo SUS
     sus.tomo = viaSus(s.tomo_sus) ? q.tomo : 0;                          // eventos caros nunca são divididos
     sus.parto = partoSus ? q.parto : 0;
     sus.cirurgia = hospitalSus ? q.cirurgia : 0;

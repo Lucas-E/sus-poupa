@@ -47,13 +47,13 @@
   },
   {
     "casa": "Casal de idosos com pressão alta, mais no SUS, uma cirurgia pelo SUS",
-    "respostas": { "uf": "RS", "c": 0, "a": 0, "i": 2, "plano": "ninguem", "origem": "mais_sus", "checkup": true, "cronico": true, "ps": false, "gravidez": "nao", "h_clin": 0, "h_cir": 1, "hospital_sus": true, "n_tomo": 1, "tomo_sus": true, "vacinas": true, "dentista": false },
+    "respostas": { "uf": "RS", "c": 0, "a": 0, "i": 2, "plano": "ninguem", "origem": "mais_sus", "checkup": true, "cronico": true, "ps": false, "gravidez": "nao", "h_clin": 0, "h_cir": 1, "hospital_sus": true, "n_tomo": 1, "tomo_sus": true, "n_samu": 1, "vacinas": true, "dentista": false },
     "esperado": {
-      "sus": 21695,
+      "sus": 22195,
       "plano": 0,
       "bolso": 1795,
       "pocket": 1795,
-      "withPlan": 55511,
+      "withPlan": 56011,
       "susCost": 3758
     }
   },

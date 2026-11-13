@@ -198,7 +198,7 @@
       <h2>O que não aparece na conta</h2>
       <p class="hint">O SUS também trabalha para a sua casa de jeitos que não viram consulta nem exame. Nada disto está nos números acima.</p>
       <ul class="unseen">
-        <li>O SAMU 192 de prontidão, que cobre 88% da população.</li>
+        <li>O SAMU 192 de prontidão, que cobre 88% da população, mesmo nos anos em que ninguém da casa precisa chamar.</li>
         <li>Os remédios de graça da Farmácia Popular, para pressão, diabetes, asma e outros.</li>
         <li>A vigilância sanitária, que fiscaliza comida, água, remédios e restaurantes.</li>
         <li>O controle de epidemias e as campanhas de vacinação.</li>
@@ -253,6 +253,8 @@ const STEPS = [
   { id: 'checkup',  type: 'yn',   q: 'Alguém da casa costuma ir ao médico mesmo sem estar doente?' },
   { id: 'cronico',  type: 'yn',   q: 'Alguém da casa tem uma condição que pede acompanhamento, como diabetes, pressão alta ou asma?' },
   { id: 'ps',       type: 'yn',   q: 'No último ano, alguém da casa precisou de atendimento de urgência mais de duas vezes?' },
+  { id: 'samu',     type: 'counts', q: 'No último ano, quantas vezes alguém da casa chamou o SAMU (192) e a ambulância veio?',
+    fields: [['n_samu', 'Chamadas ao SAMU']] },
   { id: 'gravidez', type: 'choice', q: 'No último ano, alguém da casa esteve grávida?',
     options: [['Não', 'nao'], ['Sim, o bebê ainda não nasceu', 'gravida'], ['Sim, o bebê já nasceu', 'nasceu']] },
   { id: 'parto_sus', type: 'yn',  q: 'O parto foi pelo SUS?', show: s => mixed(s) && s.gravidez === 'nasceu' },
@@ -268,7 +270,7 @@ const STEPS = [
   { id: 'dentista', type: 'yn',   q: 'A casa costuma ir ao dentista pelo menos uma vez por ano?' },
 ];
 
-const state = { uf: '', c: 0, a: 1, i: 0, h_clin: 0, h_cir: 0, n_tomo: 0 };
+const state = { uf: '', c: 0, a: 1, i: 0, h_clin: 0, h_cir: 0, n_tomo: 0, n_samu: 0 };
 let idx = 0;
 
 const $ = id => document.getElementById(id);
