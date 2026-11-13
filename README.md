@@ -158,11 +158,29 @@ O gasto público com saúde no Brasil, somando União, estados e municípios, fo
 
 Os dois últimos itens puxam o número para baixo; o primeiro pode puxar para qualquer lado.
 
+## Confira a conta você mesmo
+
+Toda a conta está num arquivo só, o [`calculo.js`](calculo.js). A página carrega esse arquivo, e ele também roda no seu computador, com o [Node.js](https://nodejs.org): para as mesmas respostas, dá exatamente os mesmos números do site.
+
+O [`exemplos.json`](exemplos.json) tem seis casas de exemplo (quem só usa o SUS, um casal com plano, quem mora fora, uma família com bebê, um casal de idosos, uma casa de cinco), cada uma com as respostas e o resultado esperado. Para refazer a conta de todas e comparar:
+
+```
+node conferir.js
+```
+
+Para ver o extrato de uma casa sua, escreva as respostas num arquivo no mesmo formato dos exemplos e rode:
+
+```
+node calculo.js respostas.json
+```
+
+As tabelas acima correspondem às constantes `ITEMS`, `PLAN`, `REGIONS` e `SHARE` do `calculo.js`. Os ajustes das respostas estão na função `estimateUse`, o primeiro palpite de quem pagou na `splitUse`, e a soma dos três montes na `totals`. Cada número tem a sua fonte em [FONTES.md](FONTES.md).
+
 ## Como rodar
 
-Baixe o `index.html` e abra no navegador. É só isso: não tem instalação, dependência nem etapa de build.
+Baixe o `index.html` e o `calculo.js` para a mesma pasta e abra o `index.html` no navegador. É só isso: não tem instalação, dependência nem etapa de build.
 
-O código inteiro está nesse arquivo. As tabelas acima correspondem às constantes `ITEMS`, `PLAN`, `REGIONS`, `STEPS` e `SHARE`. Os ajustes das respostas estão na função `estimateUse`, e o primeiro palpite de quem pagou, na `splitUse`.
+As perguntas estão na constante `STEPS` do `index.html`.
 
 O programa `dados/planos_ans.py` refaz as mensalidades de plano a partir dos dados abertos da ANS.
 

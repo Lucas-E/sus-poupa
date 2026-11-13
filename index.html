@@ -236,46 +236,10 @@
   <div><button id="consent_no">Recusar</button><button class="primary" id="consent_yes">Aceitar</button></div>
 </div>
 
+<script src="calculo.js"></script>
 <script>
-// Cada número aqui tem a sua fonte em FONTES.md.
-// plan: 'copay' = plano cobre com coparticipação · 'full' = plano cobre tudo · 'none' = plano não cobre
-// per: uso médio por ano para cada criança (c), adulto (a) e idoso (i)
-// est: preço estimado, porque não existe pesquisa pública do valor no particular
-const ITEMS = [
-  { id: 'consulta', label: 'Consultas médicas',               unit: 'por consulta', price: 200,   plan: 'copay', est: true, per: { c: 4, a: 2, i: 5 } },
-  { id: 'lab',      label: 'Pedidos de exame de laboratório', unit: 'por pedido',   price: 90,    plan: 'copay', per: { c: 1, a: 1, i: 3 } },
-  { id: 'imagem',   label: 'Raio-x ou ultrassom',             unit: 'por exame',    price: 150,   plan: 'copay', est: true, per: { c: 0, a: 0.5, i: 1 } },
-  { id: 'tomo',     label: 'Tomografia ou ressonância',       unit: 'por exame',    price: 800,   plan: 'copay', est: true, per: { c: 0, a: 0, i: 0 } },
-  { id: 'ps',       label: 'Idas ao pronto-socorro ou UPA',   unit: 'por ida',      price: 400,   plan: 'copay', est: true, per: { c: 1, a: 1, i: 1 } },
-  { id: 'vacina_c', label: 'Doses de vacina de criança',      unit: 'por dose',     price: 350,   plan: 'none',  per: { c: 0.6, a: 0, i: 0 } },
-  { id: 'vacina_a', label: 'Doses de vacina de adulto ou idoso', unit: 'por dose',  price: 85,    plan: 'none',  per: { c: 0, a: 0.1, i: 3 } },
-  { id: 'remedio',  label: 'Remédios de uso contínuo',        unit: 'por remédio, por mês', price: 25, plan: 'none', times: 12, per: { c: 0, a: 0, i: 2 } },
-  { id: 'dentista', label: 'Consultas no dentista',           unit: 'por consulta', price: 200,   plan: 'none',  est: true, per: { c: 1, a: 1, i: 1 } },
-  { id: 'diaria',   label: 'Dias de internação sem cirurgia', unit: 'por dia',      price: 2500,  plan: 'full',  per: { c: 0, a: 0, i: 0 } },
-  { id: 'cirurgia', label: 'Cirurgias',                       unit: 'por cirurgia, já com a internação', price: 15000, plan: 'full', per: { c: 0, a: 0, i: 0 } },
-  { id: 'parto',    label: 'Partos',                          unit: 'por parto, com hospital e médicos', price: 20000, plan: 'full', per: { c: 0, a: 0, i: 0 } },
-];
-const PLAN = [
-  { id: 'plan_c', label: 'Plano de saúde, criança (por mês)', price: 370 },
-  { id: 'plan_a', label: 'Plano de saúde, adulto (por mês)',  price: 800 },
-  { id: 'plan_i', label: 'Plano de saúde, idoso (por mês)',   price: 2080 },
-];
-const COPAY = 30;
-const SUS_PER_PERSON = 1879;   // gasto público com saúde por habitante em 2022 (IPEA)
-
-// Mensalidade de referência do plano por região: criança, adulto, idoso (ANS, junho de 2026)
-const REGIONS = {
-  N: [435, 890, 2360], NE: [415, 900, 2310], CO: [475, 960, 2490], SE: [340, 720, 1865], S: [385, 830, 2175],
-};
-const UFS = [
-  ['AC', 'Acre', 'N'], ['AL', 'Alagoas', 'NE'], ['AP', 'Amapá', 'N'], ['AM', 'Amazonas', 'N'],
-  ['BA', 'Bahia', 'NE'], ['CE', 'Ceará', 'NE'], ['DF', 'Distrito Federal', 'CO'], ['ES', 'Espírito Santo', 'SE'],
-  ['GO', 'Goiás', 'CO'], ['MA', 'Maranhão', 'NE'], ['MT', 'Mato Grosso', 'CO'], ['MS', 'Mato Grosso do Sul', 'CO'],
-  ['MG', 'Minas Gerais', 'SE'], ['PA', 'Pará', 'N'], ['PB', 'Paraíba', 'NE'], ['PR', 'Paraná', 'S'],
-  ['PE', 'Pernambuco', 'NE'], ['PI', 'Piauí', 'NE'], ['RJ', 'Rio de Janeiro', 'SE'], ['RN', 'Rio Grande do Norte', 'NE'],
-  ['RS', 'Rio Grande do Sul', 'S'], ['RO', 'Rondônia', 'N'], ['RR', 'Roraima', 'N'], ['SC', 'Santa Catarina', 'S'],
-  ['SP', 'São Paulo', 'SE'], ['SE', 'Sergipe', 'NE'], ['TO', 'Tocantins', 'N'],
-];
+// A conta inteira (itens, preços, médias e a soma dos três montes) está em calculo.js.
+const { ITEMS, PLAN, COPAY, UFS, mixed } = Calculo;
 
 const STEPS = [
   { id: 'uf',       type: 'uf',   q: 'Em que estado você mora?' },
@@ -303,11 +267,6 @@ const STEPS = [
   { id: 'vacinas',  type: 'yn',   q: 'As vacinas da casa estão em dia?' },
   { id: 'dentista', type: 'yn',   q: 'A casa costuma ir ao dentista pelo menos uma vez por ano?' },
 ];
-
-// Que parte do uso do dia a dia veio do SUS, pela resposta de "onde a casa cuidou da saúde".
-const SHARE = { so_sus: 1, mais_sus: 0.75, meio: 0.5, mais_fora: 0.25, nada: 0 };
-// Só pergunta "foi pelo SUS?" de cada evento caro quando a casa misturou SUS com plano ou particular.
-const mixed = s => s.origem !== 'so_sus' && s.origem !== 'nada';
 
 const state = { uf: '', c: 0, a: 1, i: 0, h_clin: 0, h_cir: 0, n_tomo: 0 };
 let idx = 0;
@@ -375,9 +334,8 @@ function field(id, label, value, kind) {
 // O extrato: cada tipo de cuidado é uma linha, com o preço e a quantidade que cada um pagou.
 const PAYERS = [['sus', 'SUS'], ['plano', 'Plano'], ['bolso', 'Paguei']];
 const qid = (it, key) => 'q_' + it.id + '_' + key;
-const hasPlan = () => state.plano === 'parte' || state.plano === 'todos';
-// Para onde vai o que não é SUS: o plano, se a casa tem um e ele cobre aquilo; senão, o bolso.
-const otherPayer = it => hasPlan() && it.plan !== 'none' ? 'plano' : 'bolso';
+const hasPlan = () => Calculo.hasPlan(state);
+const otherPayer = it => Calculo.otherPayer(state, it);
 
 // A linha tem um total fixo. Mexer em um pagador tira ou devolve dos outros, para a soma continuar igual ao total.
 function rebalance(it, edited) {
@@ -525,74 +483,22 @@ $('redo').onclick = () => {
 
 /* ---------- das respostas para o extrato ---------- */
 
-// Tudo o que a casa usou no ano, venha de onde vier.
-function estimateUse() {
-  const s = state;
-  const q = {};
-  ITEMS.forEach(it => { q[it.id] = s.c * it.per.c + s.a * it.per.a + s.i * it.per.i; });
-
-  if (!s.checkup)  { q.consulta *= 0.6; q.lab *= 0.5; q.imagem *= 0.5; }       // abaixo da média
-  if (s.cronico)   { q.consulta *= 1.6; q.lab *= 2; q.remedio += 2; }           // acima da média
-  if (s.c > 0 && s.bebe) { q.consulta += 4.5; q.vacina_c += 12; }
-  if (s.ps)        { q.ps = Math.max(q.ps * 2.5, 3); }
-  if (s.gravidez === 'gravida' || s.gravidez === 'nasceu') { q.consulta += 7; q.imagem += 1; q.lab += 3; }
-  if (!s.vacinas)  { q.vacina_c *= 0.3; q.vacina_a *= 0.3; }
-  if (!s.dentista) { q.dentista = 0; }
-
-  q.tomo = s.n_tomo;
-  q.parto = s.gravidez === 'nasceu' ? 1 : 0;
-  q.cirurgia = s.h_cir;
-  q.diaria = 6 * s.h_clin;   // 6 dias por internação sem cirurgia; parto e cirurgia já trazem a internação no preço
-  return q;
-}
-
-// Primeiro palpite de quem pagou cada coisa. A pessoa corrige linha por linha no extrato.
-function splitUse(q) {
-  const s = state;
-  const r1 = n => Math.round(n * 10) / 10;
-  const share = SHARE[s.origem] ?? 1;
-  const viaSus = answer => s.origem === 'so_sus' || (mixed(s) && answer === true);
-  const partoSus = viaSus(s.parto_sus), hospitalSus = viaSus(s.hospital_sus);
-
-  // a parte de cada item que veio do SUS
-  const sus = {};
-  ITEMS.forEach(it => { sus[it.id] = q[it.id] * share; });            // uso do dia a dia
-  ['vacina_c', 'vacina_a'].forEach(id => { sus[id] = s.origem === 'nada' ? 0 : q[id]; });   // vacina vem do SUS mesmo para quem tem plano
-  sus.tomo = viaSus(s.tomo_sus) ? q.tomo : 0;                          // eventos caros nunca são divididos
-  sus.parto = partoSus ? q.parto : 0;
-  sus.cirurgia = hospitalSus ? q.cirurgia : 0;
-  sus.diaria = hospitalSus ? q.diaria : 0;
-
-  // o resto vai para o plano, se a casa tem um e ele cobre aquilo; senão, para o bolso
-  const out = {};
-  ITEMS.forEach(it => {
-    const total = r1(q[it.id]);
-    const a = Math.min(total, r1(sus[it.id]));
-    const rest = r1(total - a);
-    const toPlan = otherPayer(it) === 'plano';
-    out[it.id] = { sus: a, plano: toPlan ? rest : 0, bolso: toPlan ? 0 : rest };
-  });
-  return out;
-}
-
 function finish() {
-  const split = splitUse(estimateUse());
-  const uf = UFS.find(u => u[0] === state.uf);
-  const planPrices = uf ? REGIONS[uf[2]] : PLAN.map(p => p.price);
+  const { rows: split, prices, paidPlan } = Calculo.extrato(state);
   ITEMS.forEach(it => {
     PAYERS.forEach(([k]) => { $(qid(it, k)).value = fmtQty(split[it.id][k]); });
-    setVal('p_' + it.id, it.price);
+    setVal('p_' + it.id, prices[it.id]);
     const used = split[it.id].sus + split[it.id].plano + split[it.id].bolso > 0;
     $('t_' + it.id).value = fmtQty(split[it.id].sus + split[it.id].plano + split[it.id].bolso);
     (used ? $('ledger') : $('ledger_more')).appendChild($('r_' + it.id));   // o que a casa não usou fica guardado em "o que faltou"
   });
-  PLAN.forEach((p, n) => setVal('p_' + p.id, planPrices[n]));
+  PLAN.forEach(p => setVal('p_' + p.id, prices[p.id]));
   $('more').hidden = !$('ledger_more').children.length;
   $('more').open = !$('ledger').children.length;
 
   $('results').classList.toggle('noplan', !hasPlan());
   $('premium_box').hidden = !hasPlan();
-  setVal('paid_plan', state.plano === 'todos' ? premiums() : 0);
+  setVal('paid_plan', paidPlan);
 
   $('table_hint').textContent = 'Cada linha é um tipo de cuidado que a casa teve no ano, a preço de particular. Toque em ' + (hasPlan() ? 'SUS, Plano ou Paguei' : 'SUS ou Paguei') + ' para dizer quem pagou a linha inteira, ou digite quantas você pagou e o resto se ajusta sozinho. Meio (0,5) quer dizer uma vez a cada dois anos.';
 
@@ -606,62 +512,61 @@ function finish() {
 
 /* ---------- a conta ---------- */
 
-const premiums = () => 12 * (state.c * num('p_plan_c') + state.a * num('p_plan_a') + state.i * num('p_plan_i'));
+// Lê o extrato como a pessoa deixou e passa para a conta de calculo.js.
+function readLedger() {
+  const rows = {}, prices = { copay: num('p_copay') };
+  ITEMS.forEach(it => {
+    rows[it.id] = {};
+    PAYERS.forEach(([k]) => { rows[it.id][k] = numQty(qid(it, k)); });
+    prices[it.id] = num('p_' + it.id);
+  });
+  PLAN.forEach(p => { prices[p.id] = num('p_' + p.id); });
+  return { rows, prices, paidPlan: num('paid_plan') };
+}
 
-// Três montes que nunca se subtraem: o que o SUS pagou, o que o plano pagou e o que a casa pagou.
-// Tudo a preço de particular, para os três falarem a mesma língua.
 function calc() {
-  const copay = Math.min(100, num('p_copay')) / 100;
-  const sum = { sus: 0, plano: 0, bolso: 0 };
-  let withPlan = 0;
+  const { rows, prices, paidPlan } = readLedger();
+  const r = Calculo.totals(state, rows, prices, paidPlan);
 
   ITEMS.forEach(it => {
-    const price = num('p_' + it.id) * (it.times || 1);
+    const line = r.lines[it.id];
     const parts = [];
-    let rowTotal = 0;
     PAYERS.forEach(([key, text]) => {
-      const value = numQty(qid(it, key)) * price;
-      $(qid(it, key)).parentNode.classList.toggle('on', value > 0);
-      sum[key] += value;
-      rowTotal += value;
-      if (value > 0) parts.push((key === 'bolso' ? 'você' : text) + ' ' + brl.format(value));
-      if (key === 'sus') withPlan += it.plan === 'copay' ? value * copay : it.plan === 'none' ? value : 0;
+      $(qid(it, key)).parentNode.classList.toggle('on', line[key] > 0);
+      if (line[key] > 0) parts.push((key === 'bolso' ? 'você' : text) + ' ' + brl.format(line[key]));
     });
-    $('v_' + it.id).textContent = brl.format(rowTotal);
+    $('v_' + it.id).textContent = brl.format(line.total);
     $('s_' + it.id).textContent = parts.length > 1 ? parts.join(' · ') : '';
   });
 
-  $('headline').textContent = brl.format(sum.sus);
-  $('headline_sub').textContent = sum.sus === 0
+  $('headline').textContent = brl.format(r.sus);
+  $('headline_sub').textContent = r.sus === 0
     ? 'Pelo que você informou, a sua casa não usou o SUS neste ano. Se usou, marque no extrato logo abaixo.'
     : 'é quanto custaria, no particular, o que a sua casa recebeu do SUS em um ano.';
 
-  const total = sum.sus + sum.plano + sum.bolso;
-  $('bar3').hidden = total === 0;
+  $('bar3').hidden = r.total === 0;
   PAYERS.forEach(([key]) => {
-    const pct = total ? sum[key] / total * 100 : 0;
+    const pct = r.total ? r[key] / r.total * 100 : 0;
     $('bar3').querySelector('.' + key).style.width = pct + '%';
-    $('pile_' + key).textContent = brl.format(sum[key]);
-    $('pct_' + key).textContent = total ? Math.round(pct) + '%' : '';
+    $('pile_' + key).textContent = brl.format(r[key]);
+    $('pct_' + key).textContent = r.total ? Math.round(pct) + '%' : '';
   });
 
   // O que saiu do bolso é outra pergunta: o particular mais a mensalidade do plano.
-  const fee = $('premium_box').hidden ? 0 : num('paid_plan');
-  $('pocket_line').textContent = sum.bolso + fee === 0
+  $('pocket_line').textContent = r.pocket === 0
     ? 'Do bolso da casa não saiu nada.'
-    : 'Do bolso da casa saíram ' + brl.format(sum.bolso + fee) +
-      (fee ? ': ' + brl.format(sum.bolso) + ' no particular e ' + brl.format(fee) + ' de mensalidade do plano.' : ', tudo no particular.');
+    : 'Do bolso da casa saíram ' + brl.format(r.pocket) +
+      (r.fee ? ': ' + brl.format(r.bolso) + ' no particular e ' + brl.format(r.fee) + ' de mensalidade do plano.' : ', tudo no particular.');
 
   // O SUS não é de graça: mostra quanto ele custa, sem misturar com os outros números.
-  const people = state.c + state.a + state.i;
-  $('cost_line').textContent = 'E quanto o SUS custa? O gasto público com saúde no Brasil foi de ' + brl.format(SUS_PER_PERSON) +
-    ' por pessoa em 2022. Para uma casa de ' + people + (people === 1 ? ' pessoa' : ' pessoas') + ', isso dá cerca de ' + brl.format(SUS_PER_PERSON * people) +
+  $('cost_line').textContent = 'E quanto o SUS custa? O gasto público com saúde no Brasil foi de ' + brl.format(Calculo.SUS_PER_PERSON) +
+    ' por pessoa em 2022. Para uma casa de ' + r.people + (r.people === 1 ? ' pessoa' : ' pessoas') + ', isso dá cerca de ' + brl.format(r.susCost) +
     ' por ano. É a média do país, paga por todos nos impostos, e não o que a sua casa pagou.';
 
   // Só faz sentido comparar com plano para quem não tem um.
-  $('plan_line').hidden = !(state.plano === 'ninguem' && sum.sus > 0);
+  $('plan_line').hidden = !r.showWithPlan;
   $('plan_line').textContent = 'Outro jeito de olhar: com um plano de saúde para a casa toda, o que veio do SUS sairia por cerca de ' +
-    brl.format(withPlan + premiums()) + ' no ano, somando 12 mensalidades, a coparticipação e o que o plano não cobre.';
+    brl.format(r.withPlan) + ' no ano, somando 12 mensalidades, a coparticipação e o que o plano não cobre.';
 }
 
 /* ---------- patrocínio, Pix e Google Analytics ---------- */

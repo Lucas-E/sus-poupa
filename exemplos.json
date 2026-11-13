@@ -1,0 +1,71 @@
+[
+  {
+    "casa": "Uma pessoa só, que usa só o SUS",
+    "respostas": { "uf": "BA", "c": 0, "a": 1, "i": 0, "plano": "ninguem", "origem": "so_sus", "checkup": false, "cronico": false, "ps": false, "gravidez": "nao", "h_clin": 0, "h_cir": 0, "n_tomo": 0, "vacinas": true, "dentista": true },
+    "esperado": {
+      "sus": 939,
+      "plano": 0,
+      "bolso": 0,
+      "pocket": 0,
+      "withPlan": 11228,
+      "susCost": 1879
+    }
+  },
+  {
+    "casa": "Casal com plano, que resolve quase tudo por ele",
+    "respostas": { "uf": "SP", "c": 0, "a": 2, "i": 0, "plano": "todos", "origem": "mais_fora", "checkup": true, "cronico": false, "ps": false, "gravidez": "nao", "h_clin": 0, "h_cir": 0, "n_tomo": 1, "tomo_sus": false, "vacinas": true, "dentista": true },
+    "esperado": {
+      "sus": 607,
+      "plano": 2240,
+      "bolso": 300,
+      "pocket": 17580,
+      "susCost": 3758
+    }
+  },
+  {
+    "casa": "Quem mora fora do país e não usou o SUS",
+    "respostas": { "uf": "RJ", "c": 0, "a": 1, "i": 0, "plano": "ninguem", "origem": "nada", "checkup": true, "cronico": false, "ps": false, "gravidez": "nao", "h_clin": 0, "h_cir": 0, "n_tomo": 0, "vacinas": true, "dentista": true },
+    "esperado": {
+      "sus": 0,
+      "plano": 0,
+      "bolso": 1174,
+      "pocket": 1174,
+      "susCost": 1879
+    }
+  },
+  {
+    "casa": "Família com um bebê, parto pelo SUS",
+    "respostas": { "uf": "PE", "c": 1, "a": 2, "i": 0, "plano": "ninguem", "origem": "so_sus", "bebe": true, "checkup": true, "cronico": false, "ps": true, "gravidez": "nasceu", "h_clin": 0, "h_cir": 0, "n_tomo": 0, "vacinas": true, "dentista": false },
+    "esperado": {
+      "sus": 32167,
+      "plano": 0,
+      "bolso": 0,
+      "pocket": 0,
+      "withPlan": 33329,
+      "susCost": 5637
+    }
+  },
+  {
+    "casa": "Casal de idosos com pressão alta, mais no SUS, uma cirurgia pelo SUS",
+    "respostas": { "uf": "RS", "c": 0, "a": 0, "i": 2, "plano": "ninguem", "origem": "mais_sus", "checkup": true, "cronico": true, "ps": false, "gravidez": "nao", "h_clin": 0, "h_cir": 1, "hospital_sus": true, "n_tomo": 1, "tomo_sus": true, "vacinas": true, "dentista": false },
+    "esperado": {
+      "sus": 21695,
+      "plano": 0,
+      "bolso": 1795,
+      "pocket": 1795,
+      "withPlan": 55511,
+      "susCost": 3758
+    }
+  },
+  {
+    "casa": "Casa de cinco, plano para parte dela, meio a meio",
+    "respostas": { "uf": "GO", "c": 2, "a": 2, "i": 1, "plano": "parte", "origem": "meio", "bebe": false, "checkup": false, "cronico": true, "ps": true, "gravidez": "nao", "h_clin": 1, "h_cir": 0, "hospital_sus": false, "n_tomo": 0, "vacinas": false, "dentista": true },
+    "esperado": {
+      "sus": 5875,
+      "plano": 19490,
+      "bolso": 1100,
+      "pocket": 1100,
+      "susCost": 9395
+    }
+  }
+]
