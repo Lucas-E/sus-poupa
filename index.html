@@ -134,6 +134,9 @@
   #pix_done { margin-top: 14px; }
   #pix_done p { margin: 0 0 6px; font-size: 0.9rem; color: var(--accent); font-weight: 600; }
   #pix_code { font-size: 0.8rem; color: var(--muted); }
+  #share { margin-top: 16px; }
+  #share_done { margin: 12px 0 0; font-size: 0.9rem; color: var(--muted); }
+  #share_done a { color: var(--accent); font-weight: 600; }
   #consent {
     position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 6; max-width: 736px; margin: 0 auto;
     display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
@@ -167,6 +170,8 @@
     <section class="result">
       <div class="big" id="headline"></div>
       <div class="sub" id="headline_sub"></div>
+      <button class="primary" id="share" type="button">Compartilhar o resultado</button>
+      <p id="share_done" hidden>A imagem foi baixada. <a id="share_wa" target="_blank" rel="noopener">Mandar no WhatsApp →</a></p>
     </section>
 
     <section>
@@ -610,6 +615,77 @@ function calc() {
 
   save();
 }
+
+/* ---------- compartilhar ---------- */
+
+// Uma imagem só com os totais (nunca as respostas), em pé para os stories.
+// Tudo o que importa fica na faixa do meio, para caber também no feed (4:5).
+const SITE = 'https://sustepoupa.com.br/';
+function shareCard() {
+  const { rows, prices, paidPlan } = readLedger();
+  const r = Calculo.totals(state, rows, prices, paidPlan);
+  const W = 1080, H = 1920, X = 100;
+  const canvas = el('canvas', { width: W, height: H });
+  const g = canvas.getContext('2d');
+  const font = (weight, size) => weight + ' ' + size + 'px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+  const text = (t, x, y, f, color, align) => { g.font = f; g.fillStyle = color; g.textAlign = align || 'left'; g.fillText(t, x, y); };
+  const C = { bg: '#f6f7f5', ink: '#16201a', muted: '#5d6b62', line: '#dfe4df', sus: '#0a7d48', plano: '#5f6f8a', bolso: '#b8731f' };
+
+  g.fillStyle = C.bg; g.fillRect(0, 0, W, H);
+  g.fillStyle = C.sus; g.beginPath(); g.roundRect(X, 330, 120, 120, 26); g.fill();
+  text('SUS', X + 60, 408, font(800, 46), '#fff', 'center');
+  text('Quanto o SUS', X + 150, 382, font(700, 48), C.ink);
+  text('te poupa?', X + 150, 438, font(700, 48), C.ink);
+
+  text('No último ano, o SUS pagou', X, 580, font(400, 46), C.muted);
+  let size = 150;
+  do { g.font = font(800, size); size -= 6; } while (g.measureText(brl.format(r.sus)).width > W - 2 * X);
+  text(brl.format(r.sus), X, 740, g.font, C.sus);
+  text('pela saúde da minha casa, a preço de particular.', X, 812, font(400, 40), C.muted);
+
+  const piles = [['sus', 'O SUS pagou'], ['plano', 'O plano pagou'], ['bolso', 'A casa pagou no particular']]
+    .filter(([k]) => k !== 'plano' || Calculo.hasPlan(state));
+  const barY = 900, barW = W - 2 * X;
+  g.save(); g.beginPath(); g.roundRect(X, barY, barW, 40, 20); g.clip();
+  g.fillStyle = C.line; g.fillRect(X, barY, barW, 40);
+  let x = X;
+  piles.forEach(([k]) => { const w = r.total ? r[k] / r.total * barW : 0; g.fillStyle = C[k]; g.fillRect(x, barY, w, 40); x += w; });
+  g.restore();
+  piles.forEach(([k, label], n) => {
+    const y = 1040 + n * 84;
+    g.fillStyle = C[k]; g.beginPath(); g.arc(X + 14, y - 14, 14, 0, 7); g.fill();
+    text(label, X + 48, y, font(400, 42), C.ink);
+    text(brl.format(r[k]), W - X, y, font(700, 42), C.ink, 'right');
+  });
+
+  text('Faça a conta da sua casa:', X, 1430, font(400, 44), C.muted);
+  text('sustepoupa.com.br', X, 1510, font(800, 64), C.sus);
+  text('Estimativa, sem valor oficial. Este site não é do governo.', X, 1600, font(400, 30), C.muted);
+  return { canvas, sus: r.sus };
+}
+
+$('share').onclick = async () => {
+  const { canvas, sus } = shareCard();
+  const message = (sus > 0 ? 'O SUS pagou ' + brl.format(sus) + ' pela saúde da minha casa em um ano, a preço de particular. Faça a conta da sua: '
+                           : 'Fiz o extrato de saúde da minha casa: quanto o SUS, o plano e eu pagamos em um ano. Faça o seu: ') + SITE;
+  const blob = await new Promise(done => canvas.toBlob(done, 'image/png'));
+  const file = new File([blob], 'sus-poupa.png', { type: 'image/png' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], text: message });
+      gtag('event', 'compartilhar', { metodo: 'aparelho' });
+      return;
+    } catch (e) {
+      if (e.name === 'AbortError') return;   // a pessoa desistiu
+    }
+  }
+  // Sem compartilhar do aparelho: baixa a imagem e oferece o link do WhatsApp com o texto.
+  const a = el('a', { href: URL.createObjectURL(blob), download: 'sus-poupa.png' });
+  document.body.appendChild(a); a.click(); a.remove();
+  $('share_wa').href = 'https://wa.me/?text=' + encodeURIComponent(message);
+  $('share_done').hidden = false;
+  gtag('event', 'compartilhar', { metodo: 'baixar' });
+};
 
 /* ---------- patrocínio, Pix e Google Analytics ---------- */
 
